@@ -32,7 +32,8 @@
 
 (eval-when-compile
   (require 'cc-langs)
-  (require 'cc-fonts))
+  (require 'cc-fonts)
+  (require 'cc-menus))
 
 (eval-and-compile
   ;; fall back on c-mode
@@ -107,7 +108,8 @@ Key bindings:
   (setq major-mode 'arduino-mode
         mode-name "Arduino"
         local-abbrev-table arduino-mode-abbrev-table
-        abbrev-mode t)
+        abbrev-mode t
+        imenu-generic-expression cc-imenu-c-generic-expression)
   (use-local-map c-mode-map)
   ;; `c-init-language-vars' is a macro that is expanded at compile
   ;; time to a large `setq' with all the language variables and their
