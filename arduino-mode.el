@@ -47,6 +47,18 @@
   arduino (append '("HIGH" "LOW" "INPUT" "OUTPUT")
                   (c-lang-const c-constant-kwds)))
 
+(c-lang-defconst c-simple-stmt-kwds
+  arduino (append '("pinMode" "digitalWrite" "digitalRead"                      ; Digital I/O
+                    "analogRead" "analogWrite"                                  ; Analog I/O
+                    "shiftOut" "pulseIn"                                        ; Advanced I/O
+                    "millis" "delay" "delayMicroseconds"                        ; Time
+                    "min" "max" "abs" "constrain" "map" "pow" "sq" "sqrt" "sin" ; Math
+                    "sin" "cos" "tan"                                           ; Trigonometry
+                    "randomSeed" "random"                                       ; Random Numbers
+                    "attachInterrupt" "detachInterrupt"                         ; External Interrupts
+                    "interrupts" "noInterrupts")                                ; Interrupts
+                  (c-lang-const c-simple-stmt-kwds)))
+
 (defgroup arduino nil "Arduino mode customizations")
 
 (defcustom arduino-font-lock-extra-types nil
