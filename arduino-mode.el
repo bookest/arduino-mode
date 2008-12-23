@@ -56,8 +56,13 @@
                     "sin" "cos" "tan"                                           ; Trigonometry
                     "randomSeed" "random"                                       ; Random Numbers
                     "attachInterrupt" "detachInterrupt"                         ; External Interrupts
-                    "interrupts" "noInterrupts")                                ; Interrupts
+                    "interrupts" "noInterrupts"                                 ; Interrupts
+                    "begin" "available" "read" "flush" "print" "println")       ; Serial Communication
                   (c-lang-const c-simple-stmt-kwds)))
+
+(c-lang-defconst c-primary-expr-kwds
+  arduino (append '("Serial")
+                  (c-lang-const c-primary-expr-kwds)))
 
 (defgroup arduino nil "Arduino mode customizations")
 
