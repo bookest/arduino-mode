@@ -109,6 +109,15 @@ Each list item should be a regexp matching a single identifier." :group 'arduino
 (easy-menu-define arduino-menu arduino-mode-map "Arduino Mode Commands"
                   (cons "Arduino" (c-lang-const c-mode-menu arduino)))
 
+(defun arduino-upload ()
+  "Upload a sketch to an Arduino board.
+
+You will need a suitable Makefile.  See URL
+`http://mjo.tc/atelier/2009/02/arduino-cli.html'."
+  (interactive)
+  (make-local-variable 'compile-command)
+  (compile "make -k upload"))
+
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.pde\\'" . arduino-mode))
 
