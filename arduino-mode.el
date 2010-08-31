@@ -49,15 +49,18 @@
 
 (c-lang-defconst c-simple-stmt-kwds
   arduino (append '("pinMode" "digitalWrite" "digitalRead"                      ; Digital I/O
-                    "analogRead" "analogWrite"                                  ; Analog I/O
-                    "shiftOut" "pulseIn"                                        ; Advanced I/O
-                    "millis" "delay" "delayMicroseconds"                        ; Time
-                    "min" "max" "abs" "constrain" "map" "pow" "sq" "sqrt" "sin" ; Math
+                    "analogReference" "analogRead" "analogWrite"                ; Analog I/O
+                    "tone" "noTone" "shiftOut" "pulseIn"                        ; Advanced I/O
+                    "millis" "micros" "delay" "delayMicroseconds"               ; Time
+                    "min" "max" "abs" "constrain" "map" "pow" "sq" "sqrt"       ; Math
                     "sin" "cos" "tan"                                           ; Trigonometry
                     "randomSeed" "random"                                       ; Random Numbers
+		    "lowByte" "highByte" "bitRead" "bitWrite" "bitSet"          ; Bits and Bytes
+		    "bitClear" "bit"
                     "attachInterrupt" "detachInterrupt"                         ; External Interrupts
                     "interrupts" "noInterrupts"                                 ; Interrupts
-                    "begin" "available" "read" "flush" "print" "println")       ; Serial Communication
+                    "begin" "end" "available" "read" "flush" "print" "println"  ; Serial Communication
+		    "write")
                   (c-lang-const c-simple-stmt-kwds)))
 
 (c-lang-defconst c-primary-expr-kwds
