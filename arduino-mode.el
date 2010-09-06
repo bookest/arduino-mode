@@ -109,14 +109,44 @@ Each list item should be a regexp matching a single identifier." :group 'arduino
 (easy-menu-define arduino-menu arduino-mode-map "Arduino Mode Commands"
                   (cons "Arduino" (c-lang-const c-mode-menu arduino)))
 
+(defcustom arduino-makefile-name "Makefile"
+  "Name of Makefile used to compile and upload Arduino sketches."
+  :type 'string
+  :group 'arduino)
+
 (defun arduino-upload ()
   "Upload a sketch to an Arduino board.
 
 You will need a suitable Makefile.  See URL
 `http://mjo.tc/atelier/2009/02/arduino-cli.html'."
   (interactive)
-  (make-local-variable 'compile-command)
-  (compile "make -k upload"))
+  (if (file-exists-p arduino-makefile-name)
+      (progn
+	(make-local-variable 'compile-command)
+	(compile (concat "make -f " arduino-makefile-name " -k upload")))
+    (if (y-or-n-p (concat "No Makefile `" arduino-makefile-name
+			  "' exists.  Create it? "))
+	(let ((arduino-project-name
+	       (file-name-nondirectory 
+		(file-name-sans-extension (buffer-file-name)))))
+	  (find-file-other-window arduino-makefile-name)
+	  (insert "# Customise the following values as required:
+
+TARGET       = " arduino-project-name "
+ARDUINO_LIBS = 
+
+MCU          = atmega328p
+F_CPU        = 16000000
+ARDUINO_PORT = /dev/ttyUSB*
+AVRDUDE_ARD_BAUDRATE = 57600
+ARDUINO_DIR  = /usr/share/arduino
+
+# If you do not already have Arduino.mk, find it at
+# http://mjo.tc/atelier/2009/02/arduino-cli.html
+include /usr/share/arduino/Arduino.mk
+")
+	  (message "Edit the Makefile as required and re-run arduino-upload."))
+      (message (concat "No Makefile `" arduino-makefile-name "' exists.  Uploading cancelled.")))))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.pde\\'" . arduino-mode))
