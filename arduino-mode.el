@@ -67,7 +67,8 @@
   arduino (append '("Serial")
                   (c-lang-const c-primary-expr-kwds)))
 
-(defgroup arduino nil "Arduino mode customizations")
+(defgroup arduino nil "Arduino mode customizations"
+  :group 'languages)
 
 (defcustom arduino-font-lock-extra-types nil
   "*List of extra types (aside from the type keywords) to recognize in Arduino mode.
