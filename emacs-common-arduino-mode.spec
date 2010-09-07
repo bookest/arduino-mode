@@ -4,7 +4,7 @@
 
 Name:		emacs-common-%{pkg}
 Version:	git1.%{gitcommit}
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Emacs editing mode for Arduino code
 
 Group:		Development/Tools
@@ -76,6 +76,7 @@ XEmacs.
 
 %build
 %{_emacs_bytecompile} %{pkg}.el
+mv %{pkg}.elc %{pkg}.gnu.elc
 %{_xemacs_bytecompile} %{pkg}.el
 
 %install
@@ -84,7 +85,8 @@ mkdir -p $RPM_BUILD_ROOT/%{_emacs_sitelispdir}/%{pkg} \
 	 $RPM_BUILD_ROOT/%{_xemacs_sitelispdir}/%{pkg} \
 	 $RPM_BUILD_ROOT/%{_emacs_sitestartdir} \
 	 $RPM_BUILD_ROOT/%{_xemacs_sitestartdir}
-cp -a %{pkg}.el %{pkg}.elc $RPM_BUILD_ROOT/%{_emacs_sitelispdir}/%{pkg}/
+cp -a %{pkg}.el $RPM_BUILD_ROOT/%{_emacs_sitelispdir}/%{pkg}/
+cp -a %{pkg}.gnu.elc $RPM_BUILD_ROOT/%{_emacs_sitelispdir}/%{pkg}/%{pkg}.elc
 cp -a %{pkg}.el %{pkg}.elc $RPM_BUILD_ROOT/%{_xemacs_sitelispdir}/%{pkg}/
 cp -a %{pkg}-init.el $RPM_BUILD_ROOT/%{_emacs_sitestartdir}/
 cp -a %{pkg}-init.el $RPM_BUILD_ROOT/%{_xemacs_sitestartdir}/
@@ -123,6 +125,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Tue Sep  7 2010  <rpm@mavit.org.uk> - git1.16e1d57-1
+* Tue Sep  7 2010 Peter Oliver <rpm@mavit.org.uk> - git1.16e1d57-2
+- Use correct version of compiled code for GNU Emacs.
+
+* Tue Sep  7 2010 Peter Oliver <rpm@mavit.org.uk> - git1.16e1d57-1
 - Initial version.
 
