@@ -106,9 +106,19 @@ Each list item should be a regexp matching a single identifier." :group 'arduino
                       ;; Add bindings which are only useful for Arduino
                       map)
   "Keymap used in arduino-mode buffers.")
+(define-key arduino-mode-map "\C-cg"  'arduino-upload)
 
 (easy-menu-define arduino-menu arduino-mode-map "Arduino Mode Commands"
                   (cons "Arduino" (c-lang-const c-mode-menu arduino)))
+
+; How does one add this directly to the Arduino menu in XEmacs?
+(if (string-match "XEmacs" emacs-version)
+    (easy-menu-add-item arduino-menu
+			(list "Micro-controller") ["Upload" arduino-upload t])
+  (easy-menu-add-item arduino-menu
+		      nil ["----" nil nil])
+  (easy-menu-add-item arduino-menu
+		      nil ["Upload" arduino-upload t]))
 
 (defcustom arduino-makefile-name "Makefile"
   "Name of Makefile used to compile and upload Arduino sketches."
@@ -170,7 +180,7 @@ Key bindings:
         local-abbrev-table arduino-mode-abbrev-table
         abbrev-mode t
         imenu-generic-expression cc-imenu-c-generic-expression)
-  (use-local-map c-mode-map)
+  (use-local-map arduino-mode-map)
   ;; `c-init-language-vars' is a macro that is expanded at compile
   ;; time to a large `setq' with all the language variables and their
   ;; customized values for our language.
