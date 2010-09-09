@@ -33,7 +33,8 @@
 (eval-when-compile
   (require 'cc-langs)
   (require 'cc-fonts)
-  (require 'cc-menus))
+  (require 'cc-menus)
+  (require 'term))
 
 (eval-and-compile
   ;; fall back on c-mode
@@ -107,6 +108,8 @@ Each list item should be a regexp matching a single identifier." :group 'arduino
                       map)
   "Keymap used in arduino-mode buffers.")
 (define-key arduino-mode-map "\C-cg"  'arduino-upload)
+(unless (string-match "XEmacs" emacs-version)
+  (define-key arduino-mode-map "\C-cm"  'arduino-serial-monitor))
 
 (easy-menu-define arduino-menu arduino-mode-map "Arduino Mode Commands"
                   (cons "Arduino" (c-lang-const c-mode-menu arduino)))
@@ -118,7 +121,9 @@ Each list item should be a regexp matching a single identifier." :group 'arduino
   (easy-menu-add-item arduino-menu
 		      nil ["----" nil nil])
   (easy-menu-add-item arduino-menu
-		      nil ["Upload" arduino-upload t]))
+		      nil ["Upload" arduino-upload t])
+  (easy-menu-add-item arduino-menu
+		      nil ["Serial monitor" arduino-serial-monitor t]))
 
 (defcustom arduino-makefile-name "Makefile"
   "Name of Makefile used to compile and upload Arduino sketches."
@@ -158,6 +163,15 @@ include /usr/share/arduino/Arduino.mk
 ")
 	  (message "Edit the Makefile as required and re-run arduino-upload."))
       (message (concat "No Makefile `" arduino-makefile-name "' exists.  Uploading cancelled.")))))
+
+(unless (string-match "XEmacs" emacs-version)
+  (defun arduino-serial-monitor (port speed)
+    "Monitor the serial connection to the Arduino."
+    (interactive (list (serial-read-name) nil))
+    
+    (if (get-buffer-process port)
+	(switch-to-buffer port)
+      (serial-term port (or speed (serial-read-speed))))))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.pde\\'" . arduino-mode))

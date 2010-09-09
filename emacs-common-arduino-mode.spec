@@ -1,10 +1,10 @@
 %global pkg arduino-mode
 %global pkgname Arduino Mode
-%global gitcommit 16e1d57
+%global gitcommit 3cc39d9
 
 Name:		emacs-common-%{pkg}
-Version:	git1.%{gitcommit}
-Release:	2%{?dist}
+Version:	git2.%{gitcommit}
+Release:	1%{?dist}
 Summary:	Emacs editing mode for Arduino code
 
 Group:		Development/Tools
@@ -16,7 +16,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:	noarch
 BuildRequires:	emacs
 BuildRequires:	xemacs
-Requires:	arduino
+Requires:	arduino-mk
 
 %description
 %{pkgname} is an add-on package for GNU Emacs and XEmacs, providing an
@@ -125,6 +125,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep  7 2010 Peter Oliver <rpm@mavit.org.uk> - git2.3cc39d9-1
+- Updated version of arduino-mode.
+- Require arduino-mk.
+
 * Tue Sep  7 2010 Peter Oliver <rpm@mavit.org.uk> - git1.16e1d57-2
 - Use correct version of compiled code for GNU Emacs.
 
