@@ -1,10 +1,10 @@
 %global pkg arduino-mode
 %global pkgname Arduino Mode
-%global gitcommit 3cc39d9
+%global gitcommit aa051bb
 
 Name:		emacs-common-%{pkg}
-Version:	git2.%{gitcommit}
-Release:	1%{?dist}
+Version:	0
+Release:	0.2.20100907git%{gitcommit}%{?dist}
 Summary:	Emacs editing mode for Arduino code
 
 Group:		Development/Tools
@@ -125,6 +125,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Sep  9 2010 Peter Oliver <rpm@mavit.org.uk> - 0-0.1.20100907gitaa051bb
+- Updated version of arduino-mode.
+
+* Tue Sep  7 2010 Peter Oliver <rpm@mavit.org.uk> - 0-0.1.20100907git3cc39d9
+- Apply package naming guidelines.
+
 * Tue Sep  7 2010 Peter Oliver <rpm@mavit.org.uk> - git2.3cc39d9-1
 - Updated version of arduino-mode.
 - Require arduino-mk.
