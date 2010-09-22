@@ -4,7 +4,7 @@
 
 Name:		emacs-common-%{pkg}
 Version:	0
-Release:	0.2.20100907git%{gitcommit}%{?dist}
+Release:	0.3.20100907git%{gitcommit}%{?dist}
 Summary:	Emacs editing mode for Arduino code
 
 Group:		Development/Tools
@@ -14,8 +14,7 @@ Source0:	http://download.github.com/mavit-%{pkg}-%{gitcommit}.tar.gz
 
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:	noarch
-BuildRequires:	emacs
-BuildRequires:	xemacs
+BuildRequires:	emacs xemacs xemacs-packages-extra
 Requires:	arduino-mk
 
 %description
@@ -24,6 +23,7 @@ editing mode for the Arduino electronics prototyping platform.
 
 This package contains the files common to both the GNU Emacs and XEmacs
 %{pkgname} packages.
+
 
 %package -n emacs-%{pkg}
 Summary:	Compiled elisp files to run %{pkgname} under GNU Emacs
@@ -74,10 +74,12 @@ XEmacs.
 %prep
 %setup -q -n mavit-%{pkg}-%{gitcommit}
 
+
 %build
 %{_emacs_bytecompile} %{pkg}.el
 mv %{pkg}.elc %{pkg}.gnu.elc
 %{_xemacs_bytecompile} %{pkg}.el
+
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -90,6 +92,7 @@ cp -a %{pkg}.gnu.elc $RPM_BUILD_ROOT/%{_emacs_sitelispdir}/%{pkg}/%{pkg}.elc
 cp -a %{pkg}.el %{pkg}.elc $RPM_BUILD_ROOT/%{_xemacs_sitelispdir}/%{pkg}/
 cp -a %{pkg}-init.el $RPM_BUILD_ROOT/%{_emacs_sitestartdir}/
 cp -a %{pkg}-init.el $RPM_BUILD_ROOT/%{_xemacs_sitestartdir}/
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -125,7 +128,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Thu Sep  9 2010 Peter Oliver <rpm@mavit.org.uk> - 0-0.1.20100907gitaa051bb
+* Wed Sep 22 2010 Peter Oliver <rpm@mavit.org.uk> - 0-0.3.20100907gitaa051bb
+- Add missing BuildRequires of xemacs-packages-extra.
+
+* Thu Sep  9 2010 Peter Oliver <rpm@mavit.org.uk> - 0-0.2.20100907gitaa051bb
 - Updated version of arduino-mode.
 
 * Tue Sep  7 2010 Peter Oliver <rpm@mavit.org.uk> - 0-0.1.20100907git3cc39d9
