@@ -108,6 +108,7 @@ Each list item should be a regexp matching a single identifier." :group 'arduino
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.pde\\'" . arduino-mode))
+(add-to-list 'auto-mode-alist '("\\.ino\\'" . arduino-mode))
 
 ;;;###autoload
 (defun arduino-mode ()
