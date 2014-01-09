@@ -34,7 +34,8 @@
 (eval-when-compile
   (require 'cc-langs)
   (require 'cc-fonts)
-  (require 'cc-menus))
+  (require 'cc-menus)
+  (require 'term))
 
 (eval-and-compile
   ;; fall back on c-mode
@@ -50,22 +51,26 @@
 
 (c-lang-defconst c-simple-stmt-kwds
   arduino (append '("pinMode" "digitalWrite" "digitalRead"                      ; Digital I/O
-                    "analogRead" "analogWrite"                                  ; Analog I/O
-                    "shiftOut" "pulseIn"                                        ; Advanced I/O
-                    "millis" "delay" "delayMicroseconds"                        ; Time
-                    "min" "max" "abs" "constrain" "map" "pow" "sq" "sqrt" "sin" ; Math
+                    "analogReference" "analogRead" "analogWrite"                ; Analog I/O
+                    "tone" "noTone" "shiftIn" "shiftOut" "pulseIn"              ; Advanced I/O
+                    "millis" "micros" "delay" "delayMicroseconds"               ; Time
+                    "min" "max" "abs" "constrain" "map" "pow" "sq" "sqrt"       ; Math
                     "sin" "cos" "tan"                                           ; Trigonometry
                     "randomSeed" "random"                                       ; Random Numbers
+		    "lowByte" "highByte" "bitRead" "bitWrite" "bitSet"          ; Bits and Bytes
+		    "bitClear" "bit"
                     "attachInterrupt" "detachInterrupt"                         ; External Interrupts
                     "interrupts" "noInterrupts"                                 ; Interrupts
-                    "begin" "available" "read" "flush" "print" "println")       ; Serial Communication
+                    "begin" "end" "available" "read" "flush" "print" "println"  ; Serial Communication
+		    "write" "peek")
                   (c-lang-const c-simple-stmt-kwds)))
 
 (c-lang-defconst c-primary-expr-kwds
   arduino (append '("Serial")
                   (c-lang-const c-primary-expr-kwds)))
 
-(defgroup arduino nil "Arduino mode customizations")
+(defgroup arduino nil "Arduino mode customizations"
+  :group 'languages)
 
 (defcustom arduino-font-lock-extra-types nil
   "*List of extra types (aside from the type keywords) to recognize in Arduino mode.
@@ -103,9 +108,71 @@ Each list item should be a regexp matching a single identifier." :group 'arduino
                       ;; Add bindings which are only useful for Arduino
                       map)
   "Keymap used in arduino-mode buffers.")
+(define-key arduino-mode-map "\C-cg"  'arduino-upload)
+(unless (string-match "XEmacs" emacs-version)
+  (define-key arduino-mode-map "\C-cm"  'arduino-serial-monitor))
 
 (easy-menu-define arduino-menu arduino-mode-map "Arduino Mode Commands"
                   (cons "Arduino" (c-lang-const c-mode-menu arduino)))
+
+; How does one add this directly to the Arduino menu in XEmacs?
+(if (string-match "XEmacs" emacs-version)
+    (easy-menu-add-item arduino-menu
+			(list "Micro-controller") ["Upload" arduino-upload t])
+  (easy-menu-add-item arduino-menu
+		      nil ["----" nil nil])
+  (easy-menu-add-item arduino-menu
+		      nil ["Upload" arduino-upload t])
+  (easy-menu-add-item arduino-menu
+		      nil ["Serial monitor" arduino-serial-monitor t]))
+
+(defcustom arduino-makefile-name "Makefile"
+  "Name of Makefile used to compile and upload Arduino sketches."
+  :type 'string
+  :group 'arduino)
+
+(defun arduino-upload ()
+  "Upload a sketch to an Arduino board.
+
+You will need a suitable Makefile.  See URL
+`http://mjo.tc/atelier/2009/02/arduino-cli.html'."
+  (interactive)
+  (if (file-exists-p arduino-makefile-name)
+      (progn
+	(make-local-variable 'compile-command)
+	(compile (concat "make -f " arduino-makefile-name " -k upload")))
+    (if (y-or-n-p (concat "No Makefile `" arduino-makefile-name
+			  "' exists.  Create it? "))
+	(let ((arduino-project-name
+	       (file-name-nondirectory 
+		(file-name-sans-extension (buffer-file-name)))))
+	  (find-file-other-window arduino-makefile-name)
+	  (insert "# Customise the following values as required:
+
+TARGET       = " arduino-project-name "
+ARDUINO_LIBS = 
+
+MCU          = atmega328p
+F_CPU        = 16000000
+ARDUINO_PORT = /dev/ttyUSB*
+AVRDUDE_ARD_BAUDRATE = 57600
+ARDUINO_DIR  = /usr/share/arduino
+
+# If you do not already have Arduino.mk, find it at
+# http://mjo.tc/atelier/2009/02/arduino-cli.html
+include /usr/share/arduino/Arduino.mk
+")
+	  (message "Edit the Makefile as required and re-run arduino-upload."))
+      (message (concat "No Makefile `" arduino-makefile-name "' exists.  Uploading cancelled.")))))
+
+(unless (string-match "XEmacs" emacs-version)
+  (defun arduino-serial-monitor (port speed)
+    "Monitor the serial connection to the Arduino."
+    (interactive (list (serial-read-name) nil))
+    
+    (if (get-buffer-process port)
+	(switch-to-buffer port)
+      (serial-term port (or speed (serial-read-speed))))))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.pde\\'" . arduino-mode))
@@ -130,7 +197,7 @@ Key bindings:
         local-abbrev-table arduino-mode-abbrev-table
         abbrev-mode t
         imenu-generic-expression cc-imenu-c-generic-expression)
-  (use-local-map c-mode-map)
+  (use-local-map arduino-mode-map)
   ;; `c-init-language-vars' is a macro that is expanded at compile
   ;; time to a large `setq' with all the language variables and their
   ;; customized values for our language.
