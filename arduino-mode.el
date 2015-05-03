@@ -49,17 +49,51 @@
                   (c-lang-const c-constant-kwds)))
 
 (c-lang-defconst c-simple-stmt-kwds
-  arduino (append '("pinMode" "digitalWrite" "digitalRead"                      ; Digital I/O
-                    "analogRead" "analogWrite"                                  ; Analog I/O
-                    "shiftOut" "pulseIn"                                        ; Advanced I/O
-                    "millis" "delay" "delayMicroseconds"                        ; Time
-                    "min" "max" "abs" "constrain" "map" "pow" "sq" "sqrt" "sin" ; Math
-                    "sin" "cos" "tan"                                           ; Trigonometry
-                    "randomSeed" "random"                                       ; Random Numbers
-                    "attachInterrupt" "detachInterrupt"                         ; External Interrupts
-                    "interrupts" "noInterrupts"                                 ; Interrupts
-                    "begin" "available" "read" "flush" "print" "println")       ; Serial Communication
-                  (c-lang-const c-simple-stmt-kwds)))
+  arduino (append
+           '(;; Digital I/O
+             "pinMode"
+             "digitalWrite"
+             "digitalRead"
+             ;; Analog I/O
+             "analogRead"
+             "analogWrite"
+             ;; Advanced I/O
+             "shiftOut"
+             "pulseIn"
+             ;; Time
+             "millis"
+             "delay"
+             "delayMicroseconds"
+             ;; Math
+             "min"
+             "max"
+             "abs"
+             "constrain"
+             "map"
+             "pow"
+             "sq"
+             "sqrt"
+             ;; Trigonometry
+             "sin"
+             "cos"
+             "tan"
+             ;; Random Numbers
+             "randomSeed"
+             "random"
+             ;; External Interrupts
+             "attachInterrupt"
+             "detachInterrupt"
+             ;; Interrupts
+             "interrupts"
+             "noInterrupts"
+             ;; Serial Communication
+             "begin"
+             "available"
+             "read"
+             "flush"
+             "print"
+             "println")
+           (c-lang-const c-simple-stmt-kwds)))
 
 (c-lang-defconst c-primary-expr-kwds
   arduino (append '("Serial")
@@ -94,18 +128,19 @@ Each list item should be a regexp matching a single identifier." :group 'arduino
 
 (c-define-abbrev-table 'arduino-mode-abbrev-table
   ;; Keywords that if they occur first on a line might alter the
-  ;; syntactic context, and which therefore should trig reindentation
-  ;; when they are completed.
+  ;; syntactic context, and which therefore should trigger
+  ;; reindentation when they are completed.
   '(("else" "else" c-electric-continued-statement 0)
     ("while" "while" c-electric-continued-statement 0)))
 
-(defvar arduino-mode-map (let ((map (c-make-inherited-keymap)))
-                      ;; Add bindings which are only useful for Arduino
-                      map)
+(defvar arduino-mode-map
+  (let ((map (c-make-inherited-keymap)))
+    ;; Add bindings which are only useful for Arduino
+    map)
   "Keymap used in arduino-mode buffers.")
 
 (easy-menu-define arduino-menu arduino-mode-map "Arduino Mode Commands"
-                  (cons "Arduino" (c-lang-const c-mode-menu arduino)))
+  (cons "Arduino" (c-lang-const c-mode-menu arduino)))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.pde\\'" . arduino-mode))
