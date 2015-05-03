@@ -1,4 +1,4 @@
-;;; arduino-mode.el --- Major mode for the Arduino language
+;;; Arduino-mode.el --- Major mode for the Arduino language
 
 ;; Copyright (C) 2008  Christopher Grim
 
@@ -45,8 +45,12 @@
                   (c-lang-const c-primitive-type-kwds)))
 
 (c-lang-defconst c-constant-kwds
-  arduino (append '("HIGH" "LOW" "INPUT" "OUTPUT")
-                  (c-lang-const c-constant-kwds)))
+  arduino (append
+           '("HIGH" "LOW"
+             "INPUT" "OUTPUT" "INPUT_PULLUP"
+             "LED_BUILTIN"
+             "true" "false")
+           (c-lang-const c-constant-kwds)))
 
 (c-lang-defconst c-simple-stmt-kwds
   arduino (append
@@ -55,13 +59,21 @@
              "digitalWrite"
              "digitalRead"
              ;; Analog I/O
+             "analogReference"
              "analogRead"
              "analogWrite"
+             ;; Due only
+             "analogReadResolution"
+             "analogWriteResolution"
              ;; Advanced I/O
+             "tone"
+             "noTone"
              "shiftOut"
+             "shiftIn"
              "pulseIn"
              ;; Time
              "millis"
+             "micros"
              "delay"
              "delayMicroseconds"
              ;; Math
@@ -71,7 +83,6 @@
              "constrain"
              "map"
              "pow"
-             "sq"
              "sqrt"
              ;; Trigonometry
              "sin"
@@ -80,24 +91,30 @@
              ;; Random Numbers
              "randomSeed"
              "random"
+             ;; Bits and Bytes
+             "lowByte"
+             "highByte"
+             "bitRead"
+             "bitWrite"
+             "bitSet"
+             "bitClear"
+             "bit"
              ;; External Interrupts
              "attachInterrupt"
              "detachInterrupt"
              ;; Interrupts
              "interrupts"
-             "noInterrupts"
-             ;; Serial Communication
-             "begin"
-             "available"
-             "read"
-             "flush"
-             "print"
-             "println")
+             "noInterrupts")
            (c-lang-const c-simple-stmt-kwds)))
 
 (c-lang-defconst c-primary-expr-kwds
-  arduino (append '("Serial")
-                  (c-lang-const c-primary-expr-kwds)))
+  arduino (append
+           '(;; Communication
+             "Serial"
+             ;; USB (Leonoardo based boards and Due only)
+             "Keyboard"
+             "Mouse")
+           (c-lang-const c-primary-expr-kwds)))
 
 (defgroup arduino nil "Arduino mode customizations")
 
