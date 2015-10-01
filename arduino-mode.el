@@ -123,6 +123,11 @@
   "*List of extra types (aside from the type keywords) to recognize in Arduino mode.
 Each list item should be a regexp matching a single identifier." :group 'arduino)
 
+(defcustom arduino-executable "arduino"
+  "*The arduino executable"
+  :group 'arduino
+  :type 'string)
+
 (defconst arduino-font-lock-keywords-1 (c-lang-const c-matchers-1 arduino)
   "Minimal highlighting for Arduino mode.")
 
@@ -198,6 +203,10 @@ Key bindings:
   (run-hooks 'c-mode-common-hook)
   (run-hooks 'arduino-mode-hook)
   (c-update-modeline))
+
+(defun arduino-run-arduino ()
+  (interactive)
+  (start-file-process "arduino" () arduino-executable (buffer-file-name)))
 
 (provide 'arduino-mode)
 ;;; arduino-mode.el ends here
