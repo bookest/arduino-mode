@@ -32,6 +32,7 @@
 (require 'cc-mode)
 
 (eval-when-compile
+  (require 'cl)
   (require 'cc-langs)
   (require 'cc-fonts)
   (require 'cc-menus))
