@@ -1,1 +1,5 @@
+# Compiled
 *.elc
+
+# Packaging
+.cask

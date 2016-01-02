@@ -4,10 +4,13 @@ env:
   - EVM_EMACS=emacs-24.4-travis
   - EVM_EMACS=emacs-24.5-travis
 before_install:
-  - export PATH="$HOME/.evm/bin:$PATH"
-  - git clone https://github.com/rejeep/evm.git /home/travis/.evm
+  - export PATH="$HOME/.cask/bin:$HOME/.evm/bin:$PATH"
+  - git clone https://github.com/rejeep/evm.git $HOME/.evm
   - evm config path /tmp
   - evm install $EVM_EMACS --use --skip
+  - git clone https://github.com/cask/cask.git $HOME/.cask
+install:
+  - cask install
 script:
   - emacs --version
-  - emacs -Q -batch -f batch-byte-compile *.el
+  - cask build
