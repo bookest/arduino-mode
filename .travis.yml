@@ -14,3 +14,4 @@ install:
 script:
   - emacs --version
   - cask build
+  - cask exec ert-runner
