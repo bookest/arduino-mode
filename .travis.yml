@@ -3,6 +3,10 @@ env:
   - EVM_EMACS=emacs-24.3-travis
   - EVM_EMACS=emacs-24.4-travis
   - EVM_EMACS=emacs-24.5-travis
+  - EVM_EMACS=emacs-25-pre-travis
+matrix:
+  allow_failures:
+    - env: EVM_EMACS=emacs-25.pre-travis
 before_install:
   - export PATH="$HOME/.cask/bin:$HOME/.evm/bin:$PATH"
   - git clone https://github.com/rejeep/evm.git $HOME/.evm
