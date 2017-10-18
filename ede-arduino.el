@@ -338,32 +338,44 @@ Argument COMMAND is the command to use for compiling the target."
   "Guess which libraries this sketch use."
   (interactive)
   (let* ((libs nil)
-         (libdir nil)
          (sketch (ede-arduino-guess-sketch))
-         (orig-buffer (get-file-buffer sketch))
-         (buff nil)
-         (tmp nil))
-    (save-current-buffer
-      (setq buff (find-file-noselect sketch))
-      (set-buffer buff)
-      (save-excursion
-        (goto-char (point-min))
-        (while (re-search-forward "#include <\\([[:word:]_]+\\).h>" nil t)
-          (setq tmp (match-string 1))
-          (unless (file-exists-p (concat tmp ".h"))
-            ;; TODO: realpath
-            (let* ((lib (match-string 1))
-                   (libdir (ede-arduino-libdir lib))
-                   (util (expand-file-name "utility" libdir)))
-              ;; Some libraries need a utility added to the library list.
-              (when (file-exists-p util)
-                (push (concat lib "/utility") libs))
-              ;; Push real lib after the utility
-              (push lib libs)
-              )))))
-    (when (not orig-buffer) (kill-buffer buff))
-    libs))
-
+         (sketch-buffer (find-file-noselect sketch))
+         (arduino-libraries
+          (save-current-buffer
+            (set-buffer sketch-buffer)
+            (if (boundp 'arduino-libraries)
+                arduino-libraries
+              nil)))
+         )
+    (cond
+     (arduino-libraries
+      (dolist (lib (split-string arduino-libraries))
+        (push lib libs)))
+     (t
+      (let* ((libdir nil)
+             (orig-buffer (get-file-buffer sketch))
+             (buff nil)
+             (tmp nil))
+        (save-current-buffer
+          (setq buff (find-file-noselect sketch))
+          (set-buffer buff)
+          (save-excursion
+            (goto-char (point-min))
+            (while (re-search-forward "#include <\\([[:word:]_]+\\).h>" nil t)
+              (setq tmp (match-string 1))
+              (unless (file-exists-p (concat tmp ".h"))
+                ;; TODO: realpath
+                (let* ((lib (match-string 1))
+                       (libdir (ede-arduino-libdir lib))
+                       (util (expand-file-name "utility" libdir)))
+                  ;; Some libraries need a utility added to the library list.
+                  (when (file-exists-p util)
+                    (push (concat lib "/utility") libs))
+                  ;; Push real lib after the utility
+                  (push lib libs)
+                  )))))
+        (when (not orig-buffer) (kill-buffer buff)))))
+        libs))
 
 (defun ede-arduino-guess-sketch ()
   "Return the file that is the core of the current project sketch."
