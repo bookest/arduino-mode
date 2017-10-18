@@ -112,7 +112,6 @@ to check."
 Return nil if there isn't one.
 Argument DIR is the directory it is created for.
 ROOTPROJ is nil, sinc there is only one project for a directory tree."
-  (ede-arduino-root "~/Arduino/Fade/")
   (let* ((root (ede-arduino-root dir))
          (proj (and root (ede-directory-get-open-project root)))
          (prefs (ede-arduino-sync)))
@@ -121,21 +120,22 @@ ROOTPROJ is nil, sinc there is only one project for a directory tree."
           (message "Opening existing project")
           proj)
 
-      (when root
-        ;; Create a new project here.
-        (message "Creating new project")
-        (let* ((name (file-name-nondirectory (directory-file-name root)))
-               (pde (expand-file-name (concat name ".pde") root)))
-          (when (not (file-exists-p pde))
-            (setq pde (expand-file-name (concat name ".ino") root)))
-          (setq proj (ede-arduino-project
-                      name
-                      :name name
-                      :directory (file-name-as-directory dir)
-                      :file pde
-                      :targets nil)))
-        (ede-add-project-to-global-list proj)
-        ))))
+      ;; Create a new project here.
+      (if root
+          (progn
+            (message "Creating new project")
+            (let* ((name (file-name-nondirectory (directory-file-name root)))
+                   (pde (expand-file-name (concat name ".pde") root)))
+              (when (not (file-exists-p pde))
+                (setq pde (expand-file-name (concat name ".ino") root)))
+              (setq proj (ede-arduino-project
+                          name
+                          :name name
+                          :directory (file-name-as-directory dir)
+                          :file pde
+                          :targets nil)))
+            (ede-add-project-to-global-list proj))
+        (message "Project loading/creation failed")))))
 
 ;;;###autoload
 (add-to-list 'ede-project-class-files
