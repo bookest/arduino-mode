@@ -38,9 +38,29 @@
   :group 'ede
   :type 'file)
 
+(defcustom ede-arduino-make-command "make"
+  "Command used to run Makefiles"
+  :group 'ede
+  :type 'file)
+
+(defcustom ede-arduino-container-prefix nil
+  "The location of the arduino installs container prefix"
+  :group 'arduino
+  :type 'string)
+
 (defcustom ede-arduino-preferences-file "~/.arduino/preferences.txt"
   "The location of personl preferences for the arduino IDE.
 Note: If this changes, we need to also update the autoload feature."
+  :group 'arduino
+  :type 'string)
+
+(defcustom ede-arduino-boards-file "hardware/arduino/avr/boards.txt"
+  "The location of the arduino boards file"
+  :group 'arduino
+  :type 'string)
+
+(defcustom ede-arduino-avrdude-baudrate nil
+  "Override the board specific baud rates"
   :group 'arduino
   :type 'string)
 
@@ -54,6 +74,9 @@ If BASEFILE is non-nil, then convert root to the project basename also.
 
 Consider expanding this at some later date."
   (let* ((prefs (ede-arduino-sync))
+         ;; without expansion the comparison in the next step fails
+         ;; for relative files
+         (dir (expand-file-name dir))
          (sketchroot (and prefs (oref prefs sketchbook)))
          )
     (when (and
@@ -89,14 +112,18 @@ to check."
 Return nil if there isn't one.
 Argument DIR is the directory it is created for.
 ROOTPROJ is nil, sinc there is only one project for a directory tree."
+  (ede-arduino-root "~/Arduino/Fade/")
   (let* ((root (ede-arduino-root dir))
          (proj (and root (ede-directory-get-open-project root)))
          (prefs (ede-arduino-sync)))
     (if proj
-        proj
+        (progn
+          (message "Opening existing project")
+          proj)
 
       (when root
         ;; Create a new project here.
+        (message "Creating new project")
         (let* ((name (file-name-nondirectory (directory-file-name root)))
                (pde (expand-file-name (concat name ".pde") root)))
           (when (not (file-exists-p pde))
@@ -179,7 +206,8 @@ If one doesn't exist, create a new one for this directory."
 (defun ede-arduino-upload ()
   "Compile the current project, and upload the result to the board."
   (interactive)
-  (project-compile-project (ede-current-project) "make all upload"))
+  (project-compile-project (ede-current-project)
+                           (concat ede-arduino-make-command " all upload")))
 
 (eval-when-compile (require 'term))
 
@@ -202,7 +230,7 @@ Argument COMMAND is the command to use when compiling."
   ;; 1) Create the mini-makefile.
   (ede-arduino-create-makefile proj)
   ;; 2) Call MAKE
-  (compile (or command "make"))
+  (compile (or command ede-arduino-make-command))
   )
 
 (defmethod project-compile-target ((obj ede-arduino-target) &optional command)
@@ -219,6 +247,7 @@ Argument COMMAND is the command to use for compiling the target."
 (defmethod ede-preprocessor-map ((this ede-arduino-target))
   "Get the pre-processor map for some generic C code."
   ;; wiring.h and pins_arduino.h have lots of #defines in them.
+  ;; TODO: realpath
   (let* ((wiring_h (expand-file-name "hardware/arduino/cores/arduino/wiring.h"
                                      (ede-arduino-find-install)))
          (table (when (and wiring_h (file-exists-p wiring_h))
@@ -292,7 +321,7 @@ Argument COMMAND is the command to use for compiling the target."
          "MCU" (oref board mcu)
          "F_CPU" (oref board f_cpu)
          "PORT" (oref prefs port)
-         "AVRDUDE_ARD_BAUDRATE" (oref board speed)
+         "AVRDUDE_ARD_BAUDRATE" (or ede-arduino-avrdude-baudrate (oref board speed))
          "AVRDUDE_ARD_PROGRAMMER" (oref board protocol)
          "ARDUINO_MK" (ede-arduino-Arduino.mk)
          "ARDUINO_HOME" (ede-arduino-find-install)
@@ -322,6 +351,7 @@ Argument COMMAND is the command to use for compiling the target."
         (while (re-search-forward "#include <\\([[:word:]_]+\\).h>" nil t)
           (setq tmp (match-string 1))
           (unless (file-exists-p (concat tmp ".h"))
+            ;; TODO: realpath
             (let* ((lib (match-string 1))
                    (libdir (ede-arduino-libdir lib))
                    (util (expand-file-name "utility" libdir)))
@@ -467,11 +497,21 @@ This is also where Arduino.mk will be found."
     (apply 'start-process "arduino" b ede-arduino-arduino-command nil)
     ))
 
-(defun ede-arduino-find-install ()
-  "Return the directory where arduino IDE code is installed."
-  (if (and ede-arduino-appdir (file-exists-p ede-arduino-appdir))
-      ede-arduino-appdir
+(defun ede-arduino-find-install (&optional full-path)
+  "Return the directory where arduino IDE code is installed.
 
+If `full-path' is set return a full path including container prefix,
+if configured"
+  (cond
+   ((and ede-arduino-appdir
+         (file-exists-p
+          (concat ede-arduino-container-prefix ede-arduino-appdir)))
+    (if full-path
+        (concat ede-arduino-container-prefix ede-arduino-appdir)
+      ede-arduino-appdir))
+   ((and ede-arduino-appdir (file-exists-p ede-arduino-appdir))
+    ede-arduino-appdir)
+   (t
     ;; Derive by looking up the arduino script.
     (let ((arduinofile ede-arduino-arduino-command))
       (when (not (file-exists-p arduinofile))
@@ -496,7 +536,7 @@ This is also where Arduino.mk will be found."
               (prog1
                   (setq ede-arduino-appdir
                         (buffer-substring-no-properties (point) (point-at-eol)))
-                (when kill (kill-buffer buff))))))))))
+                (when kill (kill-buffer buff)))))))))))
 
 (defun ede-arduino-Arduino.mk ()
   "Return the location of Arduino's makefile helper."
@@ -504,7 +544,7 @@ This is also where Arduino.mk will be found."
 
 (defun ede-arduino-Arduino-Version ()
   "Return the version of the installed Arduino."
-  (let ((vfile (expand-file-name "lib/version.txt" (ede-arduino-find-install))))
+  (let ((vfile (expand-file-name "lib/version.txt" (ede-arduino-find-install t))))
     (let ((buff (get-file-buffer vfile))
           (kill nil))
       (when (not buff)
@@ -520,7 +560,7 @@ This is also where Arduino.mk will be found."
 
 (defun ede-arduino-boards.txt ()
   "Return the location of Arduino's boards.txt file."
-  (expand-file-name "hardware/arduino/boards.txt" (ede-arduino-find-install)))
+  (expand-file-name ede-arduino-boards-file (ede-arduino-find-install t)))
 
 (defun ede-arduino-libdir (&optional library)
   "Return the full file location of LIBRARY.
