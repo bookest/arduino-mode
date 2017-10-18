@@ -145,7 +145,7 @@ ROOTPROJ is nil, sinc there is only one project for a directory tree."
               :proj-root-dirmatch
               (ede-project-autoload-dirmatch
                "arduino"
-               :fromconfig "~/.arduino/preferences.txt"
+               :fromconfig (expand-file-name ede-arduino-preferences-file)
                :configregex "^sketchbook.path=\\([^\n]+\\)$"
                :configregexidx 1)
               :proj-file 'ede-arduino-file
