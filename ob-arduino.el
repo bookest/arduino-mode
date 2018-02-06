@@ -23,13 +23,21 @@
   :group 'ob-arduino
   :type 'string)
 
+(defcustom ob-arduino:board "arduino:avr:uno"
+  "Default Arduino board."
+  :group 'ob-arduino
+  :type 'string)
+
 ;;;###autoload
 (defun org-babel-execute:arduino (body params)
   "org-babel arduino hook."
   (let* ((port (cdr (assoc :port params)))
+         (board (cdr (assoc :board params)))
          (cmd (mapconcat 'identity (list
                                     ob-arduino:program "--upload"
-                                    (if port (concat "--port " port))) " "))
+                                    (if port (concat "--port " port))
+                                    (if board (concat "--board " board))
+                                    ) " "))
          (code (org-babel-expand-body:generic body params))
          (src-file (org-babel-temp-file "ob-arduino-" ".ino")))
     ;; delete all `ob-arduino' temp files, otherwise arduino will compile all
@@ -48,6 +56,7 @@
      (concat ob-arduino:program
              " " "--upload"
              " " (if port (concat "--port " port))
+             " " (if board (concat "--board " board))
              " " src-file)
      "" ; pass empty string "" as `BODY' to `org-babel--shell-command-on-region'
      ;; to fix command `arduino' don't accept string issue.
