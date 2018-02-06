@@ -31,6 +31,7 @@
 ;; https://github.com/bookest/arduino-mode
 
 (require 'ede)
+(require 'ede/auto) ; for `ede-project-autoload'
 
 ;;; Code:
 (defcustom ede-arduino-makefile-name "Makefile"
