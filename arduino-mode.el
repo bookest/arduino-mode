@@ -197,6 +197,27 @@ Each list item should be a regexp matching a single identifier."
   (start-file-process
    "arduino-open" "*arduino-open*" arduino-executable (buffer-file-name)))
 
+(defun arduino-install-boards (board)
+  "Install `BOARD' support for Arduino."
+  (interactive (list (completing-read "Arduino install board: "
+                                      '()
+                                      nil nil
+                                      "arduino:sam")))
+  (start-process
+   "arduino-install-boards" "*arduino-install-boards*"
+   arduino-executable "--install-boards" board)
+  )
+
+(defun arduino-install-library (library)
+  "Install `LIBRARY' support for Arduino."
+  (interactive (list (completing-read "Arduino install library: "
+                                      '()
+                                      nil nil
+                                      "Bridge:1.0.0")))
+  (start-process
+   "arduino-install-library" "*arduino-install-library*"
+   arduino-executable "--install-library" library))
+
 (require 'term)
 (defun arduino-serial-monitor (port speed)
   "Monitor the `SPEED' on serial connection on `PORT' to the Arduino."
