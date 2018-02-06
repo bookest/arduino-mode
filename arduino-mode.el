@@ -201,47 +201,31 @@ Each list item should be a regexp matching a single identifier."
 	    (switch-to-buffer port)
     (serial-term port (or speed (serial-read-speed)))))
 
+;;;###autoload
+(define-derived-mode arduino-mode c-mode "arduino"
+  "Major mode for editing Arduino code."
+  ;; For `cc-mode' initialize.
+  (c-initialize-cc-mode t)
+  ;; `c-init-language-vars' is a macro that is expanded at compile time to a
+  ;; large `setq' with all the language variables and their customized values
+  ;; for our language.
+  (c-init-language-vars arduino-mode)
+  ;; `c-common-init' initializes most of the components of a CC Mode buffer,
+  ;; including setup of the mode menu, font-lock, etc. There's also a lower
+  ;; level routine `c-basic-common-init' that only makes the necessary
+  ;; initialization to get the syntactic analysis and similar things working.
+  (c-common-init 'arduino-mode)
+  
+  (easy-menu-add arduino-menu)
+  (set (make-local-variable 'c-basic-offset) 2)
+  (set (make-local-variable 'tab-width) 2)
+  )
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.pde\\'" . arduino-mode))
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.ino\\'" . arduino-mode))
 
-;;;###autoload
-(defun arduino-mode ()
-  "Major mode for editing Arduino code.
-
-The hook `c-mode-common-hook' is run with no args at mode
-initialization, then `arduino-mode-hook'.
-
-Key bindings:
-\\{arduino-mode-map}"
-  (interactive)
-  (kill-all-local-variables)
-  (c-initialize-cc-mode t)
-  (set-syntax-table arduino-mode-syntax-table)
-  (setq major-mode 'arduino-mode
-        mode-name "Arduino"
-        local-abbrev-table arduino-mode-abbrev-table
-        abbrev-mode t
-        imenu-generic-expression cc-imenu-c-generic-expression)
-  (use-local-map arduino-mode-map)
-  ;; `c-init-language-vars' is a macro that is expanded at compile
-  ;; time to a large `setq' with all the language variables and their
-  ;; customized values for our language.
-  (c-init-language-vars arduino-mode)
-  ;; `c-common-init' initializes most of the components of a CC Mode
-  ;; buffer, including setup of the mode menu, font-lock, etc.
-  ;; There's also a lower level routine `c-basic-common-init' that
-  ;; only makes the necessary initialization to get the syntactic
-  ;; analysis and similar things working.
-  (c-common-init 'arduino-mode)
-  (easy-menu-add arduino-menu)
-  (set (make-local-variable 'c-basic-offset) 2)
-  (set (make-local-variable 'tab-width) 2)
-  (run-hooks 'c-mode-common-hook)
-  (run-hooks 'arduino-mode-hook)
-  (c-update-modeline))
 
 (provide 'arduino-mode)
 ;;; arduino-mode.el ends here
