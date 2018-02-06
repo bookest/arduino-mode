@@ -225,6 +225,11 @@ include /usr/share/arduino/Arduino.mk
 	      (switch-to-buffer port)
       (serial-term port (or speed (serial-read-speed))))))
 
+(defun arduino-run-arduino ()
+  (interactive)
+  (start-file-process "arduino" () arduino-executable (buffer-file-name)))
+
+
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.pde\\'" . arduino-mode))
 ;;;###autoload
@@ -265,10 +270,6 @@ Key bindings:
   (run-hooks 'c-mode-common-hook)
   (run-hooks 'arduino-mode-hook)
   (c-update-modeline))
-
-(defun arduino-run-arduino ()
-  (interactive)
-  (start-file-process "arduino" () arduino-executable (buffer-file-name)))
 
 (provide 'arduino-mode)
 ;;; arduino-mode.el ends here
