@@ -176,44 +176,23 @@ Each list item should be a regexp matching a single identifier."
 (easy-menu-add-item arduino-menu
 		                nil ["Serial monitor" arduino-serial-monitor t])
 
-(defcustom arduino-makefile-name "Makefile"
-  "Name of Makefile used to compile and upload Arduino sketches."
-  :type 'string
-  :group 'arduino)
-
 (defun arduino-upload ()
-  "Upload the sketch to an Arduino board.
-
-You will need a suitable Makefile.  See URL
-`http://mjo.tc/atelier/2009/02/arduino-cli.html'."
+  "Upload the sketch to an Arduino board."
   (interactive)
-  (if (file-exists-p arduino-makefile-name)
-      (progn
-	      (make-local-variable 'compile-command)
-	      (compile (concat "make -f " arduino-makefile-name " -k upload")))
-    (if (y-or-n-p (concat "No Makefile `" arduino-makefile-name
-			                    "' exists.  Create it? "))
-	      (let ((arduino-project-name
-	             (file-name-nondirectory
-		            (file-name-sans-extension (buffer-file-name)))))
-	        (find-file-other-window arduino-makefile-name)
-	        (insert "# Customise the following values as required:
+  (start-file-process
+   "arduino-upload" "*arduino-upload*" arduino-executable "--upload" (buffer-file-name)))
 
-TARGET       = " arduino-project-name "
-ARDUINO_LIBS =
+(defun arduino-verify ()
+  "Verify the sketch."
+  (interactive)
+  (start-file-process
+   "arduino-verify" "*arduino-verify*" arduino-executable "--verify" (buffer-file-name)))
 
-MCU          = atmega328p
-F_CPU        = 16000000
-ARDUINO_PORT = /dev/ttyUSB*
-AVRDUDE_ARD_BAUDRATE = 57600
-ARDUINO_DIR  = /usr/share/arduino
-
-# If you do not already have Arduino.mk, find it at
-# http://mjo.tc/atelier/2009/02/arduino-cli.html
-include /usr/share/arduino/Arduino.mk
-")
-	        (message "Edit the Makefile as required and re-run arduino-upload."))
-      (message (concat "No Makefile `" arduino-makefile-name "' exists.  Uploading cancelled.")))))
+(defun arduino-open-with-arduino ()
+  "Open the sketch with the Arduino IDE."
+  (interactive)
+  (start-file-process
+   "arduino-open" "*arduino-open*" arduino-executable (buffer-file-name)))
 
 (defun arduino-serial-monitor (port speed)
   "Monitor the `SPEED' on serial connection on `PORT' to the Arduino."
@@ -221,11 +200,6 @@ include /usr/share/arduino/Arduino.mk
   (if (get-buffer-process port)
 	    (switch-to-buffer port)
     (serial-term port (or speed (serial-read-speed)))))
-
-(defun arduino-run-arduino ()
-  "Run the sketch with Arduino board."
-  (interactive)
-  (start-file-process "arduino" () arduino-executable (buffer-file-name)))
 
 
 ;;;###autoload
