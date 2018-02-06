@@ -43,7 +43,23 @@
   (c-add-language 'arduino-mode 'c-mode))
 
 (c-lang-defconst c-primitive-type-kwds
-  arduino (append '("boolean" "byte")
+  arduino (append '(;; Data Types
+                    "boolean" "byte"
+                    "int" "long" "short" "double" "float"
+                    "char" "string"
+                    "unsigned char" "unsigned int" "unsigned long"
+                    "void" "word"
+                    ;; Variable Scope & Qualifiers
+                    "const" "scope" "static" "volatile"
+                    ;; Structure
+                    ;; Sketch
+                    "loop" "setup"
+                    ;; Control Structure
+                    "break" "continue" "do" "while" "else" "for" "goto" "if"
+                    "return" "switch" "case"
+                    ;; Utilities
+                    "PROGMEM"
+                    )
                   (c-lang-const c-primitive-type-kwds)))
 
 (c-lang-defconst c-constant-kwds
@@ -57,20 +73,34 @@
 (c-lang-defconst c-simple-stmt-kwds
   arduino
   (append
-   '("pinMode" "digitalWrite" "digitalRead"                      ; Digital I/O
-     "analogReference" "analogRead" "analogWrite"                ; Analog I/O
-     "tone" "noTone" "shiftIn" "shiftOut" "pulseIn"              ; Advanced I/O
-     "millis" "micros" "delay" "delayMicroseconds"               ; Time
-     "min" "max" "abs" "constrain" "map" "pow" "sq" "sqrt"       ; Math
-     "sin" "cos" "tan"                                           ; Trigonometry
-     "randomSeed" "random"                                       ; Random Numbers
-     "lowByte" "highByte" "bitRead" "bitWrite" "bitSet"          ; Bits and Bytes
-     "bitClear" "bit"
-     "attachInterrupt" "detachInterrupt"                         ; External Interrupts
-     "interrupts" "noInterrupts"                                 ; Interrupts
-     "begin" "end" "available" "read" "flush" "print" "println"  ; Serial Communication
-     "write" "peek"
-     "analogReadResolution" "analogWriteResolution"              ; Due only
+   '(;; Operator Utilities
+     "sizeof"
+     ;; Functions
+     "pinMode" "digitalWrite" "digitalRead"                ; Digital I/O
+     "analogReference" "analogRead" "analogWrite"          ; Analog I/O
+     "analogReadResolution" "analogWriteResolution" ; Zero, Due & MKR Family
+     "tone" "noTone" "shiftIn" "shiftOut" "pulseIn" "pulseInLong" ; Advanced I/O
+     "millis" "micros" "delay" "delayMicroseconds"                ; Time
+     "min" "max" "abs" "constrain" "map" "pow" "sq" "sqrt"        ; Math
+     "sin" "cos" "tan"                                            ; Trigonometry
+     "randomSeed" "random"                              ; Random Numbers
+     "bit" "bitRead" "bitWrite" "bitSet" "bitClear" "lowByte" "highByte" ; Bits and Bytes
+     "attachInterrupt" "detachInterrupt" ; External Interrupts
+     "interrupts" "noInterrupts"         ; Interrupts
+     "serial" "stream"                   ; Serial Communication
+     ;; Characters
+     "isAlpha" "isAlphaNumeric"
+     "isAscii" "isControl" "isDigit" "isGraph" "isHexadecimalDigit"
+     "isLowerCase" "isUpperCase"
+     "isPrintable" "isPunct" "isSpace" "isWhitespace"
+     ;; USB Devices like Keyboard functions
+     "print" "println"
+     ;; Serial
+     "begin" "end" "available" "read" "flush"  "peek"
+     ;; Keyboard
+     "write" "press" "release" "releaseAll"
+     ;; Mouse
+     "click" "move" "isPressed"
      )
    (c-lang-const c-simple-stmt-kwds)))
 
