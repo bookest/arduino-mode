@@ -1,10 +1,12 @@
-;;; Arduino-mode.el --- Major mode for the Arduino language
+;;; arduino-mode.el --- Major mode for editing Arduino code.
 
 ;; Copyright (C) 2008  Christopher Grim
-
-;; Author: Christopher Grim <christopher.grim@gmail.com>
+;; Authors: Christopher Grim <christopher.grim@gmail.com>
+;; Maintainer: stardiviner <numbchild@gmail.com>
 ;; Keywords: languages, arduino
-;; Version: 1.0
+;; Package-Requires: ((emacs "24.4") (cl-lib "0.5"))
+;; Package-Version: 1.1
+;; homepage: https://github.com/stardiviner/arduino-mode
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -32,7 +34,7 @@
 (require 'cc-mode)
 
 (eval-when-compile
-  (require 'cl)
+  (require 'cl-lib)
   (require 'cc-langs)
   (require 'cc-fonts)
   (require 'cc-menus)
@@ -117,12 +119,13 @@
   :group 'languages)
 
 (defcustom arduino-font-lock-extra-types nil
-  "*List of extra types (aside from the type keywords) to recognize in Arduino mode.
+  "List of extra types (aside from type keywords) to recognize in Arduino mode.
 Each list item should be a regexp matching a single identifier."
-  :group 'arduino)
+  :group 'arduino
+  :type 'list)
 
 (defcustom arduino-executable "arduino"
-  "*The arduino executable"
+  "The arduino program executable name."
   :group 'arduino
   :type 'string)
 
@@ -162,7 +165,7 @@ Each list item should be a regexp matching a single identifier."
   "Keymap used in arduino-mode buffers.")
 
 (define-key arduino-mode-map (kbd "C-c C-c") 'arduino-upload)
-(define-key arduino-mode-map (kbd "C-c m") 'arduino-serial-monitor)
+(define-key arduino-mode-map (kbd "C-c C-m") 'arduino-serial-monitor)
 
 (easy-menu-define arduino-menu arduino-mode-map "Arduino Mode Commands"
   (cons "Arduino" (c-lang-const c-mode-menu arduino)))
@@ -194,6 +197,7 @@ Each list item should be a regexp matching a single identifier."
   (start-file-process
    "arduino-open" "*arduino-open*" arduino-executable (buffer-file-name)))
 
+(require 'term)
 (defun arduino-serial-monitor (port speed)
   "Monitor the `SPEED' on serial connection on `PORT' to the Arduino."
   (interactive (list (serial-read-name) nil))
