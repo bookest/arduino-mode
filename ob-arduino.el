@@ -8,6 +8,7 @@
 
 (require 'org)
 (require 'ob)
+(require 'arduino-mode)
 
 (defgroup ob-arduino nil
   "org-mode blocks for Arduino."
@@ -27,6 +28,9 @@
   "Default Arduino board."
   :group 'ob-arduino
   :type 'string)
+
+
+(defvar org-babel-default-header-args:sclang nil)
 
 ;;;###autoload
 (defun org-babel-execute:arduino (body params)
@@ -65,7 +69,7 @@
 
 
 ;;;###autoload
-(eval-after-load "org"
+(eval-after-load 'org
   '(add-to-list 'org-src-lang-modes '("arduino" . arduino)))
 
 
