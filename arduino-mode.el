@@ -259,6 +259,8 @@ Key bindings:
   ;; analysis and similar things working.
   (c-common-init 'arduino-mode)
   (easy-menu-add arduino-menu)
+  (set (make-local-variable 'c-basic-offset) 2)
+  (set (make-local-variable 'tab-width) 2)
   (run-hooks 'c-mode-common-hook)
   (run-hooks 'arduino-mode-hook)
   (c-update-modeline))
