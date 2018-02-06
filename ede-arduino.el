@@ -31,7 +31,6 @@
 ;; https://github.com/bookest/arduino-mode
 
 (require 'ede)
-(require 'ede/auto) ; for `ede-project-autoload'
 
 ;;; Code:
 (defcustom ede-arduino-makefile-name "Makefile"
@@ -120,7 +119,7 @@ ROOTPROJ is nil, sinc there is only one project for a directory tree."
         (progn
           (message "Opening existing project")
           proj)
-
+      
       ;; Create a new project here.
       (if root
           (progn
@@ -139,23 +138,26 @@ ROOTPROJ is nil, sinc there is only one project for a directory tree."
         (message "Project loading/creation failed")))))
 
 ;;;###autoload
-(add-to-list 'ede-project-class-files
-             (ede-project-autoload "arduino"
-              :name "ARDUINO SKETCH"
-              :file 'ede-arduino
-              :proj-root-dirmatch
-              (ede-project-autoload-dirmatch
-               "arduino"
-               :fromconfig (expand-file-name ede-arduino-preferences-file)
-               :configregex "^sketchbook.path=\\([^\n]+\\)$"
-               :configregexidx 1)
-              :proj-file 'ede-arduino-file
-              :proj-root 'ede-arduino-root
-              :load-type 'ede-arduino-load
-              :class-sym 'ede-arduino-project
-              :safe-p t
-              :new-p t)
-             t)
+(require 'ede/auto) ; for `ede-project-autoload'
+;;;###autoload
+(add-to-list
+ 'ede-project-class-files
+ (ede-project-autoload "arduino"
+                       :name "ARDUINO SKETCH"
+                       :file 'ede-arduino
+                       :proj-root-dirmatch
+                       (ede-project-autoload-dirmatch
+                        "arduino"
+                        :fromconfig (expand-file-name ede-arduino-preferences-file)
+                        :configregex "^sketchbook.path=\\([^\n]+\\)$"
+                        :configregexidx 1)
+                       :proj-file 'ede-arduino-file
+                       :proj-root 'ede-arduino-root
+                       :load-type 'ede-arduino-load
+                       :class-sym 'ede-arduino-project
+                       :safe-p t
+                       :new-p t)
+ t)
 
 ;;; CLASSES
 ;;
@@ -194,10 +196,10 @@ If one doesn't exist, create a new one for this directory."
          )
     (when (not ans)
       (setq ans (ede-arduino-target dir
-                 :name (file-name-nondirectory
-                        (directory-file-name dir))
-                 :path dir
-                 :source nil))
+                                    :name (file-name-nondirectory
+                                           (directory-file-name dir))
+                                    :path dir
+                                    :source nil))
       (object-add-to-list proj :targets ans)
       )
     ans))
@@ -286,7 +288,7 @@ Argument COMMAND is the command to use for compiling the target."
 (defmethod ede-arduino-create-makefile ((proj ede-arduino-project))
   "Create an arduino based Makefile for project PROJ."
   (let* ((mfilename (expand-file-name ede-arduino-makefile-name
-                                     (oref proj directory)))
+                                      (oref proj directory)))
          (prefs (ede-arduino-sync))
          (board (oref prefs boardobj))
          (vers (ede-arduino-Arduino-Version))
@@ -376,7 +378,7 @@ Argument COMMAND is the command to use for compiling the target."
                   (push lib libs)
                   )))))
         (when (not orig-buffer) (kill-buffer buff)))))
-        libs))
+    libs))
 
 (defun ede-arduino-guess-sketch ()
   "Return the file that is the core of the current project sketch."
@@ -403,7 +405,6 @@ Argument COMMAND is the command to use for compiling the target."
    (board :initform "uno")
    (port :initform "/dev/ttyUSB1")
    (sketchbook :initform "~/arduino")
-
    (boardobj :initform nil)
    )
   "Class containing arduino preferences.")
@@ -432,33 +433,33 @@ Emacs back to the Arduino IDE."
          (mod (nth 5 stats))
          (board nil)
          (kill nil))
-
+    
     (when (not ede-arduino-active-prefs)
       (setq ede-arduino-active-prefs (ede-arduino-prefs "Arduino Preferences")))
-
+    
     ;; Only update the prefs if the prefs file changed.
     (when (or (not (oref ede-arduino-active-prefs timestamp))
               (/= (or (oref ede-arduino-active-prefs prefssize) 0) size)
               (not (equal (oref ede-arduino-active-prefs timestamp) mod)))
-
+      
       (when (not buff)
         (setq buff (find-file-noselect prefsfile)
               kill t))
       (with-current-buffer buff
         (save-excursion
-
+          
           (goto-char (point-min))
           (when (not (re-search-forward "^serial.port=" nil t))
             (error "Cannot find serial.port from the arduino preferences"))
           (oset ede-arduino-active-prefs port
                 (buffer-substring-no-properties (point) (point-at-eol)))
-
+          
           (goto-char (point-min))
           (when (not (re-search-forward "^board=" nil t))
             (error "Cannot find board from the arduino preferences"))
           (setq board (buffer-substring-no-properties (point) (point-at-eol)))
           (oset ede-arduino-active-prefs board board)
-
+          
           (goto-char (point-min))
           (when (not (re-search-forward "^sketchbook.path=" nil t))
             (error "Cannot find sketchbook.path from the arduino preferences"))
@@ -466,15 +467,15 @@ Emacs back to the Arduino IDE."
                 (file-name-as-directory
                  (expand-file-name
                   (buffer-substring-no-properties (point) (point-at-eol)))))
-
+          
           (when kill (kill-buffer buff))
-
+          
           (oset ede-arduino-active-prefs boardobj
                 (ede-arduino-board-data board))
-
+          
           (oset ede-arduino-active-prefs prefssize size)
           (oset ede-arduino-active-prefs timestamp mod)
-
+          
           )))))
 
 ;;; Arduino Intuition
@@ -530,10 +531,10 @@ if configured"
       (when (not (file-exists-p arduinofile))
         ;; Look up where it might be...
         (setq arduinofile (locate-file arduinofile exec-path))
-
+        
         (when (not (file-exists-p arduinofile))
           (error "Cannot find arduino command location"))
-
+        
         (let ((buff (get-file-buffer arduinofile))
               (kill nil))
           (when (not buff)
@@ -542,10 +543,10 @@ if configured"
           (with-current-buffer buff
             (save-excursion
               (goto-char (point-min))
-
+              
               (when (not (re-search-forward "APPDIR=" nil t))
                 (error "Cannot find APPDIR from the arduino command"))
-
+              
               (prog1
                   (setq ede-arduino-appdir
                         (buffer-substring-no-properties (point) (point-at-eol)))
@@ -600,9 +601,9 @@ If LIBRARY is not provided as an argument, just return the library directory."
           :documentation
           "The SPEED of the arduino board's serial upload.")
    (maximum-size :initarg :maximum-size
-          :initform nil
-          :documentation
-          "The MAXIMUM_SIZE of the arduino board's uploadable target .")
+                 :initform nil
+                 :documentation
+                 "The MAXIMUM_SIZE of the arduino board's uploadable target .")
    (mcu :initarg :mcu
         :initform nil
         :documentation
@@ -630,51 +631,51 @@ Data returned is the intputs needed for the Makefile."
          (mcu nil)
          (f_cpu nil)
          (core nil))
-
+    
     (when (not buff)
       (setq buff (find-file-noselect (ede-arduino-boards.txt))
             kill t))
-
+    
     (with-current-buffer buff
       (save-excursion
-
+        
         (goto-char (point-min))
         (when (not (re-search-forward (concat "^" boardname ".name=") nil t))
           (error "Cannot find %s.name looking up board" boardname))
         (setq name (buffer-substring-no-properties (point) (point-at-eol)))
-
+        
         (goto-char (point-min))
         (when (not (re-search-forward (concat "^" boardname ".upload.protocol=") nil t))
           (error "Cannot find %s.upload.protocol looking up board" boardname))
         (setq protocol (buffer-substring-no-properties (point) (point-at-eol)))
-
+        
         (goto-char (point-min))
         (when (not (re-search-forward (concat "^" boardname ".upload.speed=") nil t))
           (error "Cannot find %s.upload.speed looking up board" boardname))
         (setq speed (buffer-substring-no-properties (point) (point-at-eol)))
-
+        
         (goto-char (point-min))
         (when (not (re-search-forward (concat "^" boardname ".upload.maximum_size=") nil t))
           (error "Cannot find %s.upload.maximum_size looking up board" boardname))
         (setq size (buffer-substring-no-properties (point) (point-at-eol)))
-
+        
         (goto-char (point-min))
         (when (not (re-search-forward (concat "^" boardname ".build.mcu=") nil t))
           (error "Cannot find %s.build.mcu looking up board" boardname))
         (setq mcu (buffer-substring-no-properties (point) (point-at-eol)))
-
+        
         (goto-char (point-min))
         (when (not (re-search-forward (concat "^" boardname ".build.f_cpu=") nil t))
           (error "Cannot find %s.build.f_cpu looking up board" boardname))
         (setq f_cpu (buffer-substring-no-properties (point) (point-at-eol)))
-
+        
         (goto-char (point-min))
         (when (not (re-search-forward (concat "^" boardname ".build.core=") nil t))
           (error "Cannot find %s.build.core looking up board" boardname))
         (setq core (buffer-substring-no-properties (point) (point-at-eol)))
-
+        
         (when kill (kill-buffer buff))
-
+        
         (ede-arduino-board boardname
                            :name name
                            :protocol protocol
