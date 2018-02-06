@@ -167,15 +167,14 @@ Each list item should be a regexp matching a single identifier."
 (easy-menu-define arduino-menu arduino-mode-map "Arduino Mode Commands"
   (cons "Arduino" (c-lang-const c-mode-menu arduino)))
 
-(if (string-match "XEmacs" emacs-version)
-    (easy-menu-add-item arduino-menu
-			                  (list "Micro-controller") ["Upload" arduino-upload t])
-  (easy-menu-add-item arduino-menu
-		                  nil ["----" nil nil])
-  (easy-menu-add-item arduino-menu
-		                  nil ["Upload" arduino-upload t])
-  (easy-menu-add-item arduino-menu
-		                  nil ["Serial monitor" arduino-serial-monitor t]))
+(easy-menu-add-item arduino-menu
+			              (list "Micro-controller") ["Upload" arduino-upload t])
+(easy-menu-add-item arduino-menu
+		                nil ["----" nil nil])
+(easy-menu-add-item arduino-menu
+		                nil ["Upload" arduino-upload t])
+(easy-menu-add-item arduino-menu
+		                nil ["Serial monitor" arduino-serial-monitor t])
 
 (defcustom arduino-makefile-name "Makefile"
   "Name of Makefile used to compile and upload Arduino sketches."
@@ -183,7 +182,7 @@ Each list item should be a regexp matching a single identifier."
   :group 'arduino)
 
 (defun arduino-upload ()
-  "Upload a sketch to an Arduino board.
+  "Upload the sketch to an Arduino board.
 
 You will need a suitable Makefile.  See URL
 `http://mjo.tc/atelier/2009/02/arduino-cli.html'."
@@ -216,16 +215,15 @@ include /usr/share/arduino/Arduino.mk
 	        (message "Edit the Makefile as required and re-run arduino-upload."))
       (message (concat "No Makefile `" arduino-makefile-name "' exists.  Uploading cancelled.")))))
 
-(unless (string-match "XEmacs" emacs-version)
-  (defun arduino-serial-monitor (port speed)
-    "Monitor the serial connection to the Arduino."
-    (interactive (list (serial-read-name) nil))
-    
-    (if (get-buffer-process port)
-	      (switch-to-buffer port)
-      (serial-term port (or speed (serial-read-speed))))))
+(defun arduino-serial-monitor (port speed)
+  "Monitor the `SPEED' on serial connection on `PORT' to the Arduino."
+  (interactive (list (serial-read-name) nil))
+  (if (get-buffer-process port)
+	    (switch-to-buffer port)
+    (serial-term port (or speed (serial-read-speed)))))
 
 (defun arduino-run-arduino ()
+  "Run the sketch with Arduino board."
   (interactive)
   (start-file-process "arduino" () arduino-executable (buffer-file-name)))
 
