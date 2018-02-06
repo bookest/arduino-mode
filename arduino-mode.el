@@ -180,13 +180,13 @@ Each list item should be a regexp matching a single identifier."
 		                nil ["Serial monitor" arduino-serial-monitor t])
 
 (defun arduino-upload ()
-  "Upload the sketch to an Arduino board."
+  "Build and upload the sketch to an Arduino board."
   (interactive)
   (start-file-process
    "arduino-upload" "*arduino-upload*" arduino-executable "--upload" (buffer-file-name)))
 
-(defun arduino-verify ()
-  "Verify the sketch."
+(defun arduino-build ()
+  "Verify the sketch by building it."
   (interactive)
   (start-file-process
    "arduino-verify" "*arduino-verify*" arduino-executable "--verify" (buffer-file-name)))
