@@ -160,13 +160,12 @@ Each list item should be a regexp matching a single identifier."
 
 (defvar arduino-mode-map
   (let ((map (c-make-inherited-keymap)))
-    ;; Add bindings which are only useful for Arduino
+    (define-key map (kbd "C-c C-c") 'arduino-upload)
+    (define-key map (kbd "C-c C-v") 'arduino-build)
+    (define-key map (kbd "C-c C-m") 'arduino-serial-monitor)
+    (define-key map (kbd "C-c C-x") 'arduino-open-with-arduino)
     map)
   "Keymap used in arduino-mode buffers.")
-
-(define-key arduino-mode-map (kbd "C-c C-c") 'arduino-upload)
-(define-key arduino-mode-map (kbd "C-c C-m") 'arduino-serial-monitor)
-(define-key arduino-mode-map (kbd "C-c C-x") 'arduino-open-with-arduino)
 
 (easy-menu-define arduino-menu arduino-mode-map "Arduino Mode Commands"
   (cons "Arduino" (c-lang-const c-mode-menu arduino)))
