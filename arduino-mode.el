@@ -166,6 +166,7 @@ Each list item should be a regexp matching a single identifier."
 
 (define-key arduino-mode-map (kbd "C-c C-c") 'arduino-upload)
 (define-key arduino-mode-map (kbd "C-c C-m") 'arduino-serial-monitor)
+(define-key arduino-mode-map (kbd "C-c C-x") 'arduino-open-with-arduino)
 
 (easy-menu-define arduino-menu arduino-mode-map "Arduino Mode Commands"
   (cons "Arduino" (c-lang-const c-mode-menu arduino)))
