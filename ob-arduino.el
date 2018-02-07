@@ -1,9 +1,34 @@
 ;;; ob-arduino.el --- Org-mode Babel support for Arduino.
-
+;;
+;; Authors: stardiviner <numbchild@gmail.com>
+;; Package-Requires: ((emacs "24.4") (org "24.1"))
+;; Package-Version: 1.0
+;; Keywords: arduino org babel
+;; homepage: https://github.com/stardiviner/arduino-mode
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+;;
 ;;; Commentary:
-
-
-
+;; 
+;; Like the following src block, press =[C-c C-c]= to upload to Arduino board.
+;; 
+;; #+begin_src arduino
+;; // the setup function runs once when you press reset or power the board
+;; void setup() {
+;;   // initialize digital pin LED_BUILTIN as an output.
+;;   pinMode(LED_BUILTIN, OUTPUT);
+;; }
+;; 
+;; // the loop function runs over and over again forever
+;; void loop() {
+;;   digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+;;   delay(100);                       // wait for 0.1 second
+;;   digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
+;;   delay(100);                       // wait for 0.1 second
+;; }
+;; #+end_src
+;;
 ;;; Code:
 
 (require 'org)
