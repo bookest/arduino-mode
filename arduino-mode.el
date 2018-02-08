@@ -161,7 +161,7 @@ Each list item should be a regexp matching a single identifier."
 (defvar arduino-mode-map
   (let ((map (c-make-inherited-keymap)))
     (define-key map (kbd "C-c C-c") 'arduino-upload)
-    (define-key map (kbd "C-c C-v") 'arduino-build)
+    (define-key map (kbd "C-c C-v") 'arduino-verify)
     (define-key map (kbd "C-c C-m") 'arduino-serial-monitor)
     (define-key map (kbd "C-c C-x") 'arduino-open-with-arduino)
     map)
@@ -185,7 +185,7 @@ Each list item should be a regexp matching a single identifier."
   (start-file-process
    "arduino-upload" "*arduino-upload*" arduino-executable "--upload" (buffer-file-name)))
 
-(defun arduino-build ()
+(defun arduino-verify ()
   "Verify the sketch by building it."
   (interactive)
   (start-file-process
