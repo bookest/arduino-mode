@@ -177,6 +177,10 @@ Each list item should be a regexp matching a single identifier."
 (easy-menu-add-item arduino-menu
 		                nil ["Upload" arduino-upload t])
 (easy-menu-add-item arduino-menu
+		                nil ["Verify" arduino-verify t])
+(easy-menu-add-item arduino-menu
+		                nil ["Open with Arduino" arduino-open-with-arduino t])
+(easy-menu-add-item arduino-menu
 		                nil ["Serial monitor" arduino-serial-monitor t])
 
 (defun arduino-upload ()
