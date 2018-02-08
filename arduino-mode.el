@@ -183,41 +183,62 @@ Each list item should be a regexp matching a single identifier."
 (easy-menu-add-item arduino-menu
 		                nil ["Serial monitor" arduino-serial-monitor t])
 
+(defvar arduino-upload-process-buf nil)
+
 (defun arduino-upload ()
   "Build and upload the sketch to an Arduino board."
   (interactive)
-  (make-process
-   :command (list "arduino" "--upload" (buffer-file-name))
-   :name "arduino-upload"
-   :buffer "*arduino-upload*"
-   :sentinel (lambda (proc event)
-               (when (string= event "finished\n")
-                 (message "Arduino upload succeed.")))
-   ))
+  (setq arduino-upload-process-buf (buffer-name))
+  (let* ((proc-name "arduino-upload")
+         (proc-buffer "*arduino-upload*")
+         (proc (make-process
+                :command (list "arduino" "--upload" (buffer-file-name))
+                :name proc-name
+                :buffer proc-buffer
+                :sentinel (lambda (proc event)
+                            (when (string= event "finished\n")
+                              (with-current-buffer arduino-upload-process-buf
+                                (setq mode-line-process nil))
+                              (message "Arduino upload succeed."))))))
+    (setq mode-line-process proc-name)))
+
+(defvar arduino-verify-process-buf nil)
 
 (defun arduino-verify ()
   "Verify the sketch by building it."
   (interactive)
-  (make-process
-   :command (list "arduino" "--verify" (buffer-file-name))
-   :name "arduino-verify"
-   :buffer "*arduino-verify*"
-   :sentinel (lambda (proc event)
-               (when (string= event "finished\n")
-                 (message "Arduino verify build succeed.")))
-   ))
+  (setq arduino-verify-process-buf (buffer-name))
+  (let* ((proc-name "arduino-verify")
+         (proc-buffer "*arduino-verify*")
+         (proc (make-process
+                :command (list "arduino" "--verify" (buffer-file-name))
+                :name proc-name
+                :buffer proc-buffer
+                :sentinel (lambda (proc event)
+                            (when (string= event "finished\n")
+                              (with-current-buffer arduino-verify-process-buf
+                                (setq mode-line-process nil))
+                              (message "Arduino verify build succeed."))))))
+    (setq mode-line-process proc-name)))
+
+(defvar arduino-open-process-buf nil)
 
 (defun arduino-open-with-arduino ()
   "Open the sketch with the Arduino IDE."
   (interactive)
-  (make-process
-   :command (list "arduino" (buffer-file-name))
-   :name "arduino-open"
-   :buffer "*arduino-open*"
-   :sentinel (lambda (proc event)
-               (when (string= event "finished\n")
-                 (message "Opened with Arduino succeed.")))
-   ))
+  (setq arduino-open-process-buf (buffer-name))
+  (let* ((proc-name "arduino-open")
+         (proc-buffer "*arduino-open*")
+         (proc (make-process
+                :command (list "arduino" (buffer-file-name))
+                :name proc-name
+                :buffer proc-buffer
+                :sentinel (lambda (proc event)
+                            (when (string= event "finished\n")
+                              (with-current-buffer arduino-open-process-buf
+                                (setq mode-line-process nil))
+                              (message "Opened with Arduino succeed."))))))
+    (setq mode-line-process proc-name)))
 
 (defun arduino-install-boards (board)
   "Install `BOARD' support for Arduino."
