@@ -196,10 +196,12 @@ Each list item should be a regexp matching a single identifier."
                 :name proc-name
                 :buffer proc-buffer
                 :sentinel (lambda (proc event)
-                            (when (string= event "finished\n")
-                              (with-current-buffer arduino-upload-process-buf
-                                (setq mode-line-process nil))
-                              (message "Arduino upload succeed."))))))
+                            (if (string= event "finished\n")
+                                (progn
+                                  (with-current-buffer arduino-upload-process-buf
+                                    (setq mode-line-process nil))
+                                  (message "Arduino upload succeed."))
+                              (display-buffer "*arduino-upload*"))))))
     (setq mode-line-process proc-name)))
 
 (defvar arduino-verify-process-buf nil)
@@ -215,10 +217,12 @@ Each list item should be a regexp matching a single identifier."
                 :name proc-name
                 :buffer proc-buffer
                 :sentinel (lambda (proc event)
-                            (when (string= event "finished\n")
-                              (with-current-buffer arduino-verify-process-buf
-                                (setq mode-line-process nil))
-                              (message "Arduino verify build succeed."))))))
+                            (if (string= event "finished\n")
+                                (progn
+                                  (with-current-buffer arduino-verify-process-buf
+                                    (setq mode-line-process nil))
+                                  (message "Arduino verify build succeed."))
+                              (display-buffer "*arduino-verify*"))))))
     (setq mode-line-process proc-name)))
 
 (defvar arduino-open-process-buf nil)
@@ -234,12 +238,16 @@ Each list item should be a regexp matching a single identifier."
                 :name proc-name
                 :buffer proc-buffer
                 :sentinel (lambda (proc event)
-                            (when (string= event "finished\n")
-                              (with-current-buffer arduino-open-process-buf
-                                (setq mode-line-process nil))
-                              (message "Opened with Arduino succeed."))))))
+                            (if (string= event "finished\n")
+                                (progn
+                                  (with-current-buffer arduino-open-process-buf
+                                    (setq mode-line-process nil))
+                                  (message "Opened with Arduino succeed."))
+                              (display-buffer "*arduino-open*"))))))
     (setq mode-line-process proc-name)))
 
+;;; NOTE: Because command-line arduino does not support search and list out
+;;; boards and libraries. So I will not write a sentinel for installing process.
 (defun arduino-install-boards (board)
   "Install `BOARD' support for Arduino."
   (interactive (list (completing-read "Arduino install board: "
