@@ -4,7 +4,7 @@
 ;; Authors: Christopher Grim <christopher.grim@gmail.com>
 ;; Maintainer: stardiviner <numbchild@gmail.com>
 ;; Keywords: languages, arduino
-;; Package-Requires: ((emacs "24.4") (cl-lib "0.5"))
+;; Package-Requires: ((emacs "25") (cl-lib "0.5"))
 ;; Package-Version: 1.1
 ;; homepage: https://github.com/stardiviner/arduino-mode
 
@@ -182,20 +182,38 @@ Each list item should be a regexp matching a single identifier."
 (defun arduino-upload ()
   "Build and upload the sketch to an Arduino board."
   (interactive)
-  (start-file-process
-   "arduino-upload" "*arduino-upload*" arduino-executable "--upload" (buffer-file-name)))
+  (make-process
+   :command (list "arduino" "--upload" (buffer-file-name))
+   :name "arduino-upload"
+   :buffer "*arduino-upload*"
+   :sentinel (lambda (proc event)
+               (when (string= event "finished\n")
+                 (message "Arduino upload succeed.")))
+   ))
 
 (defun arduino-verify ()
   "Verify the sketch by building it."
   (interactive)
-  (start-file-process
-   "arduino-verify" "*arduino-verify*" arduino-executable "--verify" (buffer-file-name)))
+  (make-process
+   :command (list "arduino" "--verify" (buffer-file-name))
+   :name "arduino-verify"
+   :buffer "*arduino-verify*"
+   :sentinel (lambda (proc event)
+               (when (string= event "finished\n")
+                 (message "Arduino verify build succeed.")))
+   ))
 
 (defun arduino-open-with-arduino ()
   "Open the sketch with the Arduino IDE."
   (interactive)
-  (start-file-process
-   "arduino-open" "*arduino-open*" arduino-executable (buffer-file-name)))
+  (make-process
+   :command (list "arduino" (buffer-file-name))
+   :name "arduino-open"
+   :buffer "*arduino-open*"
+   :sentinel (lambda (proc event)
+               (when (string= event "finished\n")
+                 (message "Opened with Arduino succeed.")))
+   ))
 
 (defun arduino-install-boards (board)
   "Install `BOARD' support for Arduino."
