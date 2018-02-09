@@ -48,6 +48,7 @@
   :group 'arduino
   :type 'string)
 
+;;;###autoload
 (defcustom ede-arduino-preferences-file "~/.arduino/preferences.txt"
   "The location of personl preferences for the arduino IDE.
 Note: If this changes, we need to also update the autoload feature."
