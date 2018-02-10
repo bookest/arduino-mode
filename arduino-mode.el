@@ -211,6 +211,7 @@ Each list item should be a regexp matching a single identifier."
                                   (with-current-buffer arduino-upload-process-buf
                                     (setq mode-line-process nil))
                                   (message "Arduino upload succeed."))
+                              (setq mode-line-process nil)
                               (display-buffer "*arduino-upload*"))))))
     (setq mode-line-process proc-name)))
 
@@ -232,6 +233,7 @@ Each list item should be a regexp matching a single identifier."
                                   (with-current-buffer arduino-verify-process-buf
                                     (setq mode-line-process nil))
                                   (message "Arduino verify build succeed."))
+                              (setq mode-line-process nil)
                               (display-buffer "*arduino-verify*"))))))
     (setq mode-line-process proc-name)))
 
@@ -253,6 +255,7 @@ Each list item should be a regexp matching a single identifier."
                                   (with-current-buffer arduino-open-process-buf
                                     (setq mode-line-process nil))
                                   (message "Opened with Arduino succeed."))
+                              (setq mode-line-process nil)
                               (display-buffer "*arduino-open*"))))))
     (setq mode-line-process proc-name)))
 
