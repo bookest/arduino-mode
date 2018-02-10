@@ -294,6 +294,18 @@ Each list item should be a regexp matching a single identifier."
   (let ((default-directory (expand-file-name arduino-mode-home)))
     (find-file sketch)))
 
+;;; generate .clang_complete file for `irony-mode' and `company-irony-c-headers'.
+(defun arduino-generate-include-path-file ()
+  "Generate .clang_complete file for `irony-mode' and `company-irony-c-headers'."
+  (interactive)
+  (let ((default-directory (expand-file-name arduino-mode-home))
+        (filename ".clang_complete"))
+    (if (file-exists-p filename)
+        (if (y-or-n-p ".clang_complete file already exist, do you want to edit it? ")
+            (find-file filename))
+      (with-temp-file filename
+        (insert "-I/home/stardiviner/Arduino/libraries/")))))
+
 
 ;;;###autoload
 (define-derived-mode arduino-mode c-mode "arduino"
