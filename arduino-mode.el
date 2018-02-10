@@ -44,6 +44,16 @@
   ;; fall back on c-mode
   (c-add-language 'arduino-mode 'c-mode))
 
+(defgroup arduino-mode nil
+  "Customize arduino-mode."
+  :prefix "arduino-mode-"
+  :group 'arduino)
+
+(defcustom arduino-mode-home "~/Arduino"
+  "The path of ARDUINO_HOME."
+  :type 'directory
+  :group 'arduino-mode)
+
 (c-lang-defconst c-primitive-type-kwds
   arduino (append '(;; Data Types
                     "boolean" "byte"
@@ -276,6 +286,14 @@ Each list item should be a regexp matching a single identifier."
   (if (get-buffer-process port)
 	    (switch-to-buffer port)
     (serial-term port (or speed (serial-read-speed)))))
+
+;;;###autoload
+(defun arduino-sketch-new (sketch)
+  "A command to create new `SKETCH' in ARDUINO_HOME (~/Arduino)."
+  (interactive (list (read-from-minibuffer "Arduino new sketch file: ")))
+  (let ((default-directory (expand-file-name arduino-mode-home)))
+    (find-file sketch)))
+
 
 ;;;###autoload
 (define-derived-mode arduino-mode c-mode "arduino"
