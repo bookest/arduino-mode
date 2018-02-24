@@ -21,6 +21,8 @@ use with package company-arduino to get Arduino code completing.
 
 ** ob-arduino
 
+You need have Org-mode installed, ~ob-arduino.el~ is in Org-mode contrib/ now.
+
 Like the following src block, press =[C-c C-c]= to upload to Arduino board.
 
 #+begin_src org
