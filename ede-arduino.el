@@ -39,12 +39,12 @@
   :type 'file)
 
 (defcustom ede-arduino-make-command "make"
-  "Command used to run Makefiles"
+  "Command used to run Makefiles."
   :group 'ede
   :type 'file)
 
 (defcustom ede-arduino-container-prefix nil
-  "The location of the arduino installs container prefix"
+  "The location of the arduino installs container prefix."
   :group 'arduino
   :type 'string)
 
@@ -56,12 +56,12 @@ Note: If this changes, we need to also update the autoload feature."
   :type 'string)
 
 (defcustom ede-arduino-boards-file "hardware/arduino/avr/boards.txt"
-  "The location of the arduino boards file"
+  "The location of the arduino boards file."
   :group 'arduino
   :type 'string)
 
 (defcustom ede-arduino-avrdude-baudrate nil
-  "Override the board specific baud rates"
+  "Override the board specific baud rates."
   :group 'arduino
   :type 'string)
 
@@ -143,12 +143,10 @@ ROOTPROJ is nil, sinc there is only one project for a directory tree."
 ;;;###autoload
 (add-to-list
  'ede-project-class-files
- (ede-project-autoload "arduino"
-                       :name "ARDUINO SKETCH"
+ (ede-project-autoload :name "Arduino sketch"
                        :file 'ede-arduino
                        :proj-root-dirmatch
                        (ede-project-autoload-dirmatch
-                        "arduino"
                         :fromconfig (expand-file-name ede-arduino-preferences-file)
                         :configregex "^sketchbook.path=\\([^\n]+\\)$"
                         :configregexidx 1)
@@ -244,7 +242,7 @@ Argument COMMAND is the command to use for compiling the target."
 
 (defmethod project-debug-target ((target ede-arduino-target))
   "Run the current project derived from TARGET in a debugger."
-  (error "No Debugger support for Arduino."))
+  (error "No Debugger support for Arduino"))
 
 ;;; C/C++ support
 (require 'semantic/db)
@@ -394,7 +392,7 @@ Argument COMMAND is the command to use for compiling the target."
       (if (file-exists-p sketch)
           sketch
         (error "Cannot guess primary sketch file for project %s"
-               (object-name proj))))))
+               (eieio-object-name proj))))))
 
 ;;; Arduino Preferences
 ;;
@@ -436,7 +434,7 @@ Emacs back to the Arduino IDE."
          (kill nil))
     
     (when (not ede-arduino-active-prefs)
-      (setq ede-arduino-active-prefs (ede-arduino-prefs "Arduino Preferences")))
+      (setq ede-arduino-active-prefs (ede-arduino-prefs)))
     
     ;; Only update the prefs if the prefs file changed.
     (when (or (not (oref ede-arduino-active-prefs timestamp))
@@ -513,7 +511,7 @@ This is also where Arduino.mk will be found."
     ))
 
 (defun ede-arduino-find-install (&optional full-path)
-  "Return the directory where arduino IDE code is installed.
+  "Return the `FULL-PATH' where arduino IDE code is installed.
 
 If `full-path' is set return a full path including container prefix,
 if configured"
