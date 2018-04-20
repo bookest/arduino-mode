@@ -202,7 +202,7 @@ Each list item should be a regexp matching a single identifier."
   (let* ((proc-name "arduino-upload")
          (proc-buffer "*arduino-upload*")
          (proc (make-process
-                :command (list "arduino" "--upload" (buffer-file-name))
+                :command (list arduino-executable "--upload" (buffer-file-name))
                 :name proc-name
                 :buffer proc-buffer
                 :sentinel (lambda (proc event)
@@ -224,7 +224,7 @@ Each list item should be a regexp matching a single identifier."
   (let* ((proc-name "arduino-verify")
          (proc-buffer "*arduino-verify*")
          (proc (make-process
-                :command (list "arduino" "--verify" (buffer-file-name))
+                :command (list arduino-executable "--verify" (buffer-file-name))
                 :name proc-name
                 :buffer proc-buffer
                 :sentinel (lambda (proc event)
@@ -246,7 +246,7 @@ Each list item should be a regexp matching a single identifier."
   (let* ((proc-name "arduino-open")
          (proc-buffer "*arduino-open*")
          (proc (make-process
-                :command (list "arduino" (buffer-file-name))
+                :command (list arduino-executable (buffer-file-name))
                 :name proc-name
                 :buffer proc-buffer
                 :sentinel (lambda (proc event)
