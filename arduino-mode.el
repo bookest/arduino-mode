@@ -5,7 +5,7 @@
 ;; Maintainer: stardiviner <numbchild@gmail.com>
 ;; Keywords: languages, arduino
 ;; Package-Requires: ((emacs "25") (cl-lib "0.5"))
-;; Package-Version: 1.1
+;; Package-Version: 1.2
 ;; homepage: https://github.com/stardiviner/arduino-mode
 
 ;; This file is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@
 
 ;;; Code:
 (require 'cc-mode)
+(require 'spinner)
 
 (eval-when-compile
   (require 'cl-lib)
@@ -139,6 +140,15 @@ Each list item should be a regexp matching a single identifier."
   :group 'arduino
   :type 'string)
 
+(defcustom arduino-spinner-type 'progress-bar
+  "The spinner type for arduino processes.
+
+Value is a symbol.  The possible values are the symbols in the
+`spinner-types' variable."
+  :type 'symbol
+  :safe #'symbolp
+  :group 'arduino)
+
 (defconst arduino-font-lock-keywords-1 (c-lang-const c-matchers-1 arduino)
   "Minimal highlighting for Arduino mode.")
 
@@ -211,8 +221,12 @@ Each list item should be a regexp matching a single identifier."
                                   (with-current-buffer arduino-upload-process-buf
                                     (setq mode-line-process nil))
                                   (message "Arduino upload succeed."))
-                              (setq mode-line-process nil)
-                              (display-buffer "*arduino-upload*"))))))
+                              (with-current-buffer arduino-upload-process-buf
+                                (display-buffer "*arduino-upload*")))
+                            (setq-local mode-line-process nil)
+                            (with-current-buffer arduino-upload-process-buf
+                              (when spinner-current (spinner-stop)))))))
+    (spinner-start arduino-spinner-type)
     (setq mode-line-process proc-name)))
 
 (defvar arduino-verify-process-buf nil)
@@ -233,8 +247,11 @@ Each list item should be a regexp matching a single identifier."
                                   (with-current-buffer arduino-verify-process-buf
                                     (setq mode-line-process nil))
                                   (message "Arduino verify build succeed."))
-                              (setq mode-line-process nil)
-                              (display-buffer "*arduino-verify*"))))))
+                              (display-buffer "*arduino-verify*"))
+                            (setq-local mode-line-process nil)
+                            (with-current-buffer arduino-verify-process-buf
+                              (when spinner-current (spinner-stop)))))))
+    (spinner-start arduino-spinner-type)
     (setq mode-line-process proc-name)))
 
 (defvar arduino-open-process-buf nil)
@@ -254,9 +271,12 @@ Each list item should be a regexp matching a single identifier."
                                 (progn
                                   (with-current-buffer arduino-open-process-buf
                                     (setq mode-line-process nil))
-                                  (message "Opened with Arduino succeed."))
-                              (setq mode-line-process nil)
-                              (display-buffer "*arduino-open*"))))))
+                                  (message "Opened with Arduino succeed.")))
+                            (setq-local mode-line-process nil)
+                            (with-current-buffer arduino-open-process-buf
+                              (when spinner-current (spinner-stop)))
+                            ))))
+    (spinner-start arduino-spinner-type)
     (setq mode-line-process proc-name)))
 
 ;;; NOTE: Because command-line arduino does not support search and list out
