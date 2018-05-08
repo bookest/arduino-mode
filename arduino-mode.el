@@ -5,7 +5,7 @@
 ;; Maintainer: stardiviner <numbchild@gmail.com>
 ;; Keywords: languages, arduino
 ;; Package-Requires: ((emacs "25") (cl-lib "0.5"))
-;; Package-Version: 1.1
+;; Package-Version: 1.2
 ;; homepage: https://github.com/stardiviner/arduino-mode
 
 ;; This file is free software; you can redistribute it and/or modify
