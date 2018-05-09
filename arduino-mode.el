@@ -4,7 +4,7 @@
 ;; Authors: Christopher Grim <christopher.grim@gmail.com>
 ;; Maintainer: stardiviner <numbchild@gmail.com>
 ;; Keywords: languages, arduino
-;; Package-Requires: ((emacs "25") (cl-lib "0.5"))
+;; Package-Requires: ((emacs "25") (cl-lib "0.5") (spinner "1.7.3"))
 ;; Package-Version: 1.2
 ;; homepage: https://github.com/stardiviner/arduino-mode
 
