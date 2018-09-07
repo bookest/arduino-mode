@@ -209,5 +209,87 @@ Key bindings:
   (interactive)
   (start-file-process "arduino" () arduino-executable (buffer-file-name)))
 
+;;; Arduino cli support
+;; See more: https://github.com/arduino/arduino-cli
+
+
+(defcustom arduino-exe "arduino-cli"
+  "Arduino executable."
+  :group 'arduino
+  :type 'string)
+
+(defcustom arduino-fqbn nil
+  "The FQBN for the connected board."
+  :group 'arduino
+  :type 'string)
+
+(defcustom arduino-port nil
+  "The port that the board is connected to."
+  :group 'arduino
+  :type 'string)
+
+(defcustom arduino-sketch-dir nil
+  "The directory that the sketch is in."
+  :group 'arduino
+  :type 'string)
+
+(defun arduino-update ()
+  "Get FQBN of the current device.
+This function lags so use it in async.
+
+Returns an alist of ((fqbn . fqbn) (port . port))
+You can check it out in terminal by \"arduino-cli board list\"."
+  (let ((result (shell-command-to-string (concat arduino-exe " board list"))))
+    (string-match
+     "Board Name +?\n\\([^ \t]+\\)[ \t]*\\([^ \t]+\\)"
+     result)
+    (ignore-errors
+      `((fqbn . ,(setq arduino-fqbn (match-string 1 result)))
+        (port . ,(setq arduino-port (match-string 2 result)))))))
+
+
+(defun arduino--build-command (command sketch &optional port)
+  "Add port and FQBN to command."
+  (let (info)
+    (unless (or arduino-fqbn arduino-port)
+      (message "Collecting board information...")
+      (setq info (arduino-update)))
+    (format "%s %s %s --fqbn %s %s"
+            arduino-exe
+            command
+            (if port
+                (concat "-p "(or arduino-port (alist-get 'port info)))
+              "")
+            (or arduino-fqbn (alist-get 'fqbn info))
+            sketch)))
+
+(defun arduino-compile-sketch ()
+  "Compile current sketch."
+  (interactive)
+  (message "Compiling...")
+  (message
+   (arduino--quote-string
+    (shell-command-to-string
+     (arduino--build-command "compile" (or arduino-sketch-dir
+                                           default-directory))))))
+(defun arduino-upload-sketch ()
+  "Upload current sketch."
+  (interactive)
+  (message "Uploading...")
+  (message
+   (arduino--quote-string
+    (shell-command-to-string
+     (arduino--build-command "upload" (or arduino-sketch-dir
+                                          default-directory)
+                             t)))))
+
+(defun arduino--quote-string (str)
+  "Quote % sign in STR."
+  (replace-regexp-in-string "%" "%%" str t t))
+
+(defin-key arduino-mode-map (kbd "C-c C-c") #'arduino-compile-sketch)
+(defin-key arduino-mode-map (kbd "C-c C-u") #'arduino-upload-sketch)
+(defin-key arduino-mode-map (kbd "C-c u") #'arduino-update)
+
 (provide 'arduino-mode)
 ;;; arduino-mode.el ends here
