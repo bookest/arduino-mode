@@ -17,16 +17,16 @@
 
 * Usage
 
-** arduino-mode
+** interactive with Arduino board in arduino-mode
 
 - Upload :: In Arduino source code file, press =[C-c C-c]= to upload to Arduino board.
 - Build :: In Arduino source code file, press =[C-c C-v]= to build.
 
-** completing
+** Arduino code completing
 
 use with package company-arduino to get Arduino code completing.
 
-** ob-arduino
+** Org Mode Babel source block support with ob-arduino.el
 
 You need have Org-mode installed, ~ob-arduino.el~ is in Org-mode contrib/ now.
 
