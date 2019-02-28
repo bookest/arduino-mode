@@ -1,3 +1,10 @@
+* Screenshots
+
+#+ATTR_ORG: :width 600
+#+ATTR_LATEX: :width 6.0in
+#+ATTR_HTML: :width 600px
+[[file:arduino-mode.png]]
+
 * Install
 
 ** MELPA available
