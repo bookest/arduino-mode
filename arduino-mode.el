@@ -289,8 +289,7 @@ Value is a symbol.  The possible values are the symbols in the
                                       "arduino:sam")))
   (start-process
    "arduino-install-boards" "*arduino-install-boards*"
-   arduino-executable "--install-boards" board)
-  )
+   arduino-executable "--install-boards" board))
 
 (defun arduino-install-library (library)
   "Install `LIBRARY' support for Arduino."
@@ -347,8 +346,7 @@ Value is a symbol.  The possible values are the symbols in the
   
   (easy-menu-add arduino-menu)
   (set (make-local-variable 'c-basic-offset) 2)
-  (set (make-local-variable 'tab-width) 2)
-  )
+  (set (make-local-variable 'tab-width) 2))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.pde\\'" . arduino-mode))
